@@ -9,16 +9,26 @@ Author URI: http://buildcreate.com
 */
 
 function wp_authenticate_user_acc($user, $password) {
-	 $dbfail = get_option('ag_fail');
-	      // See if the checkbox #login_accept was checked
-    if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
-        // Checkbox on, allow login
-        return $user;
+	
+	$dblogin = get_option('ag_login');
+	$dbregister = get_option('ag_register');
+	
+	if(in_array($GLOBALS['pagenow'], array('wp-login.php')) && $dblogin == 1 || in_array($GLOBALS['pagenow'], array('wp-register.php', 'index.php')) && $dbregister == 1) {
+	
+		 $dbfail = get_option('ag_fail');
+		  
+		  // See if the checkbox #login_accept was checked
+	    if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
+	        // Checkbox on, allow login
+	        return $user;
+	    } else {
+	        // Did NOT check the box, do not allow login
+	        $error = new WP_Error();
+	        $error->add('did_not_accept', $dbfail);
+	        return $error;
+	    }
     } else {
-        // Did NOT check the box, do not allow login
-        $error = new WP_Error();
-        $error->add('did_not_accept', $dbfail);
-        return $error;
+	    return $user;
     }
 }
 

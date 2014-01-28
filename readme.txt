@@ -1,9 +1,9 @@
 === Agreeable ===
 Contributors: buildcreate 
-Tags: agree, terms,conditions,require, terms, login,log in, admin,login page,admin page,policy, privacy
+Tags: agree, terms,conditions,require, terms, login,log in, admin,login page,admin, buddy press, page,policy, privacy
 Requires at least: 3.5 
-Tested up to: 3.5.1
-Stable tag: 0.1
+Tested up to: 3.8.1
+Stable tag: trunk
 License:GPLv2 or later
 Add an "Agree to terms" check box on login and/or registration pages.  Works with BuddyPress.
 
@@ -20,6 +20,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ===
+
+= 0.1.1 =
+* Login bug fix
 
 = 0.1 =
 * Added URL field for terms page url

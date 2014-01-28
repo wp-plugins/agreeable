@@ -19,7 +19,7 @@ Add an "agree to terms" check box to your login and/or registration pages, requi
 Extract the zip file and just drop the contents in the wp-content/plugins/ directory of your WordPress installation and then activate the Plugin from Plugins page.
 
 
-== Changelog ===
+== Changelog ==
 
 = 0.1.1 =
 * Login bug fix

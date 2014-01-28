@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: Agreeable
-Plugin URI: http://wordpress.org/extend/plugins/agreeable/
+Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.1
-Author: build/create
+Version: 0.1.1
+Author: buildcreate
 Author URI: http://buildcreate.com
 */
 

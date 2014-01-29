@@ -51,7 +51,7 @@ function terms_accept(){
     }
 }
 
-function i_agree_options() {  
+function agreeable_options() {  
   add_options_page('agreeable', 'Agreeable', 'manage_options', 'terms-options', 'agoptions');
 }
 
@@ -60,7 +60,7 @@ function agoptions() {
 }
 
 // Add to the admin menu
-add_action('admin_menu', 'i_agree_options');
+add_action('admin_menu', 'agreeable_options');
 
 // Add it to the appropriate hooks
 add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);

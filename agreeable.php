@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.1.1
+Version: 0.1.1.2
 Author: buildcreate
 Author URI: http://buildcreate.com
 */
@@ -65,3 +65,55 @@ add_action('admin_menu', 'i_agree_options');
 // Add it to the appropriate hooks
 add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
 add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 9999, 2);
+
+
+/* Plugin feedback form */
+
+function feedback_form() {
+	
+	if(!$_POST['feedback_email'] && !$_POST['feedback_content']) {
+	
+	$output = '<h3>We want your feedback.</h3>
+				<p><em>Have a feature idea, feedback, or question about the plugin?<br>We want to know- send it on over!</em></p>
+				<form id="feedback-form" name="feedback_form" method="post" action="'.str_replace( '%7E', '~', $_SERVER['REQUEST_URI']).'">
+				<label for="feedback_email">Your email</label>
+					<input type="email" name="feedback_email" placeholder="your@email.com" /><br>
+				<label for="feedback_content">Message</label>
+					<textarea name="feedback_content" placeholder="Type your feedback / feature request here!"></textarea><br>
+					<input type="submit" value="Send it!" />			
+				</form>';
+	} else {
+		$output = '<h3>Thank you for your feedback!</h3>';
+	}
+	
+	echo $output;
+}
+
+function send_feedback() {
+	if($_POST['feedback_email'] && $_POST['feedback_content']) {
+		
+		$to = 'ian@buildcreate.com';
+		$subject = 'New plugin feedback';
+		$message = $_POST['feedback_content'];
+		$headers = 'From: <'.$_POST['feedback_email'].'>' . "\r\n";
+		
+		
+		wp_mail( $to, $subject, $message, $headers, '' );
+		
+	}
+}
+
+add_action( 'plugins_loaded', 'send_feedback');
+
+
+
+
+
+
+
+
+
+
+
+
+

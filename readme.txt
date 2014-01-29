@@ -10,6 +10,8 @@ Add an "Agree to terms" check box on login and/or registration pages.  Works wit
 == Description ==
 Add an "agree to terms" check box to your login and/or registration pages, requiring users to agree prior to logging in or registering. Tested with BuddyPress.  Based on the I-Agree plugin by thesturs.
 
+Use the form in the plugin settings page to contact us with feature requests, comments, or concerns.  Enjoy the plugin!
+
 == Screenshots ==
 1. Login 
 2. Admin 
@@ -20,6 +22,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 0.1.1.2 =
+* Added feedback form to the settings page
 
 = 0.1.1 =
 * Login bug fix

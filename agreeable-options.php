@@ -40,8 +40,8 @@ color: gray;
 font-style: italic;
 font-size:. 9em;
 }
-form {
-width: 725px;
+#ag-form {
+width: 50%;
 }
 textarea {
 clear: right;
@@ -82,9 +82,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7f9ddb', end
 	font-weight: 100;
 	padding: 1em 2em;
 }
+#feedback-form input[type="email"], #feedback-form textarea {width: 100%; display: block;}
+#feedback-form input[type="submit"] {padding: .5em 1em;}
+#feedback-form textarea {min-height: 100px;}
 </style>
 <div class="wrap">
-
+			
+			<div style="position: fixed; right: 10%; top: 13%; width: 25%; min-height: 200px; padding: 1.5em; background: #fafafa; border: 1px solid #ccc;">
+				<?php feedback_form(); ?>
+			</div>
 			
 			<?php echo "<h2>" . __( 'Agreeable Settings', 'ag_trdom' ) . "</h2>"; ?>
 			

@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.1.1.2
+Version: 0.1.1.3
 Author: buildcreate
 Author URI: http://buildcreate.com
 */
@@ -44,7 +44,8 @@ function terms_accept(){
 	$dbregister = get_option('ag_register');
 	global $post;
 	
-    if(in_array($GLOBALS['pagenow'], array('wp-login.php')) && $dblogin == 1 || in_array($GLOBALS['pagenow'], array('wp-register.php', 'index.php')) && $dbregister == 1) {
+if(in_array('wp-login.php', $GLOBALS['pagenow']) && $dblogin == 1 || in_array('login', $body_class) && $dblogin == 1 || in_array('wp-register.php', $GLOBALS['pagenow']) && $dbregister == 1 || in_array('register', $body_class) && $dbregister == 1 ) {
+
     
     	// Add an element to the login form, which must be checked
     	echo '<div id="terms-accept"><label><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a target="_BLANK" href="'.$dburl.'">'.$dbtermm.'</a></label></div>';

@@ -23,6 +23,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+= 0.1.1.3 =
+* Fixed bug with BuddyPress registration / login
+
 = 0.1.1.2 =
 * Added feedback form to the settings page
 

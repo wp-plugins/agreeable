@@ -3,7 +3,7 @@
 			//Form data sent
 			 
             $dbfail = $_POST['ag_fail'];
-          $dbtermm = stripslashes($dbfail);
+          $dbfail = stripslashes($dbfail);
             update_option('ag_fail', $dbfail);
           
           $dbtermm = $_POST['ag_termm'];

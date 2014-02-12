@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.1.2
+Version: 0.1.2.1
 Author: buildcreate, thesturs
 Author URI: http://buildcreate.com
 */
@@ -13,7 +13,7 @@ function wp_authenticate_user_acc($user, $password) {
 	$dblogin = get_option('ag_login');
 	$dbregister = get_option('ag_register');
 	
-	if(in_array($GLOBALS['pagenow'], array('wp-login.php')) && $dblogin == 1 || in_array($GLOBALS['pagenow'], array('wp-register.php', 'index.php')) && $dbregister == 1) {
+	if($GLOBALS['pagenow'] == 'wp-login.php' && $dblogin == 1 || in_array('login', $body_class) && $dblogin == 1 || $GLOBALS['pagenow'] == 'wp-register.php' && $dbregister == 1 || in_array('register', $body_class) && $dbregister == 1 ) {
 	
 		 $dbfail = get_option('ag_fail');
 		  
@@ -49,7 +49,7 @@ if($GLOBALS['pagenow'] == 'wp-login.php' && $dblogin == 1 || in_array('login', $
 
     
     	// Add an element to the login form, which must be checked
-    	echo '<div id="terms-accept"><label><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a target="_BLANK" href="'.$dburl.'">'.$dbtermm.'</a></label></div>';
+    	echo '<div id="terms-accept"><label><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a target="_BLANK" href="'.$dburl.'">'.$dbtermm.'</a></label></div><br>';
     }
 }
 
@@ -66,6 +66,7 @@ add_action('admin_menu', 'agreeable_options');
 
 // Add it to the appropriate hooks
 add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
+add_filter('registration_errors', 'wp_authenticate_user_acc', 99999, 2);
 add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 9999, 2);
 
 
@@ -105,7 +106,7 @@ function feedback_form() {
 }
 
 function send_feedback() {
-	if($_POST['feedback_email'] && $_POST['feedback_content']) {
+	if(isset($_POST['feedback_email']) && isset($_POST['feedback_content'])) {
 		
 		$to = 'ian@buildcreate.com';
 		$subject = 'New plugin feedback';

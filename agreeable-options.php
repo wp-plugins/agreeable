@@ -55,35 +55,7 @@ margin-top: 2em;
 
 #ag-form h3 {border-bottom: 1px solid #ccc; margin-bottom: .5em; padding-bottom: .5em; color: #369; text-shadow: 0 1px 1px #fff;}
 #ag-form input[type="text"] {min-width: 400px;}
-#ag-form input[type="submit"] {
-	-moz-box-shadow:inset 0px 1px 0px 0px #dcecfb;
-	-webkit-box-shadow:inset 0px 1px 0px 0px #dcecfb;
-	box-shadow:inset 0px 1px 0px 0px #dcecfb;
-background: #7f9ddb; /* Old browsers */
-/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzdmOWRkYiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM3NDdlYmMiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-background: -moz-linear-gradient(top,  #7f9ddb 0%, #747ebc 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7f9ddb), color-stop(100%,#747ebc)); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(top,  #7f9ddb 0%,#747ebc 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(top,  #7f9ddb 0%,#747ebc 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(top,  #7f9ddb 0%,#747ebc 100%); /* IE10+ */
-background: linear-gradient(to bottom,  #7f9ddb 0%,#747ebc 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7f9ddb', endColorstr='#747ebc',GradientType=0 ); /* IE6-8 */
-	border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border:1px solid #84bbf3;
-	display:inline-block;
-	color:#ffffff;
-	font-size:1.2em;
-	text-decoration:none;
-	text-align:center;
-	text-shadow:1px 1px 0px #528ecc;
-	font-weight: 100;
-	padding: 1em 2em;
-}
 #feedback-form input[type="email"], #feedback-form textarea {width: 100%; display: block;}
-#feedback-form input[type="submit"] {padding: .5em 1em;}
 #feedback-form textarea {min-height: 100px;}
 </style>
 <div class="wrap">

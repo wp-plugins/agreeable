@@ -82,8 +82,21 @@ function feedback_form() {
 					<input type="email" name="feedback_email" placeholder="your@email.com" /><br>
 				<label for="feedback_content">Message</label>
 					<textarea name="feedback_content" placeholder="Type your feedback / feature request here!"></textarea><br>
-					<input type="submit" value="Send it!" />			
+					<input type="submit" class="button-primary button-large button" style="margin-top: 1em;" value="Send it!" />			
 				</form>';
+	$output .= '<div style="padding: 1em; background: #eee; color: #333; margin-top: 2em;">
+					<h3 style="color: #369;">Buy me a cup of joe?</h3>
+					<p>
+						<em>Feeling generous?  Because I sure wouldn\'t turn down a hot cup of coffee...</em>
+					</p>
+					<p>
+						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+							<input type="hidden" name="cmd" value="_s-xclick">
+							<input type="hidden" name="hosted_button_id" value="LCNWR8KVE3UVL">
+							<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+							<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+						</form>
+					</p></div>';
 	} else {
 		$output = '<h3>Thank you for your feedback!</h3>';
 	}

@@ -3,19 +3,22 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.1.2.1
-Author: buildcreate, thesturs
+Version: 0.2
+Author: buildcreate
 Author URI: http://buildcreate.com
 */
 
-function wp_authenticate_user_acc($user, $password) {
+function wp_authenticate_user_acc($user) {
 	
 	$dblogin = get_option('ag_login');
 	$dbregister = get_option('ag_register');
+	$dbfail = get_option('ag_fail');
+	$body_class = get_body_class();
+	$login_page = get_option('ag_login_page');
+	$register_page = get_option('ag_register_page');
 	
-	if($GLOBALS['pagenow'] == 'wp-login.php' && $dblogin == 1 || in_array('login', $body_class) && $dblogin == 1 || $GLOBALS['pagenow'] == 'wp-register.php' && $dbregister == 1 || in_array('register', $body_class) && $dbregister == 1 ) {
-	
-		 $dbfail = get_option('ag_fail');
+	global $bp, $post;
+	isset($post) ? $pid = $post->ID : $pid = NULL;
 		  
 		  // See if the checkbox #login_accept was checked
 	    if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
@@ -23,34 +26,97 @@ function wp_authenticate_user_acc($user, $password) {
 	        return $user;
 	    } else {
 	        // Did NOT check the box, do not allow login
+	        
 	        $error = new WP_Error();
 	        $error->add('did_not_accept', $dbfail);
+			  
+			  if(isset($bp->signup)) {
+	        		$bp->signup->errors['login_accept'] = '<div class="error">'.$dbfail.'</div>';
+	        }
+	        
 	        return $error;
 	    }
-    } else {
-	    return $user;
-    }
+
+}
+
+// Add it to the appropriate hooks
+add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
+add_filter('registration_errors', 'wp_authenticate_user_acc', 99999, 2);
+add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 99999, 2);
+
+function display_terms_form() {
+	$dbtermm = get_option('ag_termm');
+	$dburl = get_option('ag_url');
+	
+	global $post;
+	isset($post) ? $pid = $post->ID : $pid = NULL;
+	$body_class = get_body_class();
+	
+	global $bp;
+ 
+   if(isset($dburl)) {$terms = get_post($dburl); $terms = apply_filters('the_content', $terms->post_content);}    
+ 
+ 	// Add an element to the login form, which must be checked
+ 	
+ 	agreeable_thickbox();
+ 	
+ 	echo '<style>#terms{display: none} #TB_ajaxContent p {font-weight: 200; line-height: 1.5em;}</style>';
+ 	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
+ 		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
+ 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="thickbox" target="_BLANK" href="#TB_inline?width=600&height=550&inlineId=terms">'.$dbtermm.'</a></label></div>';
+ 	
+ 	echo '<div id="terms"><div>'.$terms.'</div></div>';
+}
+
+function login_terms_accept(){
+	$dblogin = get_option('ag_login');
+	
+	if($dblogin == 1) {
+		display_terms_form();
+	}
+}
+
+function register_terms_accept() {
+	
+	$dbregister = get_option('ag_register');
+	
+	if($dbregister == 1) {
+		display_terms_form();
+	}
 }
 
 // As part of WP login form construction, call our function
-add_filter ( 'login_form', 'terms_accept' );
-add_filter ( 'register_form', 'terms_accept' );
-add_action('bp_before_registration_submit_buttons', 'terms_accept');
+add_filter ( 'login_form', 'login_terms_accept' );
+add_filter ( 'register_form', 'register_terms_accept' );
+add_action('bp_before_registration_submit_buttons', 'register_terms_accept');
 
-function terms_accept(){
-	$dbtermm = get_option('ag_termm');
-	$dburl = get_option('ag_url');
+
+function ag_widget_terms_accept() {
+
 	$dblogin = get_option('ag_login');
-	$dbregister = get_option('ag_register');
-	global $post;
-	$body_class = get_body_class();
 	
-if($GLOBALS['pagenow'] == 'wp-login.php' && $dblogin == 1 || in_array('login', $body_class) && $dblogin == 1 || $GLOBALS['pagenow'] == 'wp-register.php' && $dbregister == 1 || in_array('register', $body_class) && $dbregister == 1 ) {
+	if($dblogin == 1) {
+		display_terms_form();
+	}
+	
+	echo '<script>';
+		echo '
+			jQuery(document).ready(function($){
+				$("#terms-accept").insertBefore("#bp-login-widget-rememberme");
+				$("#bp-login-widget-form").nextAll(".terms-form").hide();
+			});
+		';
+	echo '</script>';
+	
+}
 
-    
-    	// Add an element to the login form, which must be checked
-    	echo '<div id="terms-accept"><label><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a target="_BLANK" href="'.$dburl.'">'.$dbtermm.'</a></label></div><br>';
-    }
+add_action('bp_after_login_widget_loggedout', 'ag_widget_terms_accept');
+
+function agreeable_thickbox() {
+	if (! is_admin()) {
+		wp_enqueue_script('thickbox', null,  array('jquery'));
+		wp_enqueue_style('thickbox.css', '/'.WPINC.'/js/thickbox/thickbox.css', null, '1.0');
+	}
 }
 
 function agreeable_options() {  
@@ -64,17 +130,12 @@ function agoptions() {
 // Add to the admin menu
 add_action('admin_menu', 'agreeable_options');
 
-// Add it to the appropriate hooks
-add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
-add_filter('registration_errors', 'wp_authenticate_user_acc', 99999, 2);
-add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 9999, 2);
-
 
 /* Plugin feedback form */
 
 function feedback_form() {
 	
-	if(!$_POST['feedback_email'] && !$_POST['feedback_content']) {
+	if(!isset($_POST['feedback_email']) && !isset($_POST['feedback_content'])) {
 	
 	$output = '<h3>We want your feedback.</h3>
 				<p><em>Have a feature idea, feedback, or question about the plugin?<br>We want to know- send it on over!</em></p>

@@ -1,14 +1,16 @@
 <?php 
-	    if($_POST['ag_hidden'] == 'Y') {
+	    if(isset($_POST['ag_hidden']) && $_POST['ag_hidden'] == 'Y') {
 			//Form data sent
 			 
-            $dbfail = $_POST['ag_fail'];
+          $dbfail = $_POST['ag_fail'];
+          
           $dbfail = stripslashes($dbfail);
             update_option('ag_fail', $dbfail);
           
           $dbtermm = $_POST['ag_termm'];
-         $dbtermm = stripslashes($dbtermm);
-            update_option('ag_termm', $dbtermm);
+          
+          $dbtermm = stripslashes($dbtermm);
+          update_option('ag_termm', $dbtermm);
             
           $dburl = $_POST['ag_url'];
           update_option('ag_url', $dburl);
@@ -18,7 +20,6 @@
 
           $dbregister = $_POST['ag_register'];
           update_option('ag_register', $dbregister);
-	
 			 ?> 
 		
 			<div class="updated"><p><strong><?php _e('Options saved.' ); ?></strong></p></div>  
@@ -57,7 +58,11 @@ margin-top: 2em;
 #ag-form input[type="text"] {min-width: 400px;}
 #feedback-form input[type="email"], #feedback-form textarea {width: 100%; display: block;}
 #feedback-form textarea {min-height: 100px;}
+.checkboxes {padding-bottom: 1em;}
 </style>
+
+<?php $pages = get_pages('status=publish&numberposts=-1&posts_per_page=-1'); ?>
+
 <div class="wrap">
 			
 			<div style="position: fixed; right: 10%; top: 13%; width: 25%; min-height: 200px; padding: 1.5em; background: #fafafa; border: 1px solid #ccc;">
@@ -73,7 +78,15 @@ margin-top: 2em;
 				
 				<p><label for="ag_fail"><?php _e("Failed to agree error message: " ); ?></label><input type="text" name="ag_fail" value="<?php echo $dbfail; ?>" size="20"></br><?php _e("<span class='mes'>This is what shows up if they don't check the box</span>" ); ?></p>
 				
-				<p><label for="ag_url"><?php _e("URL for Terms: " ); ?></label><input type="text" name="ag_url" value="<?php echo $dburl; ?>" size="20"></br><?php _e("<span class='mes'>This is the URL where the user can read your terms</span>" ); ?></p>
+				<p>
+					<?php _e("<span class='mes'>This is the URL where the user can read your terms</span>" ); ?>
+					<label for="ag_url">Select your terms page</label>
+					<select name="ag_url">
+						<?php foreach ($pages as $p) { ?>
+							<option value="<?php echo $p->ID; ?>" <?php echo $dburl == $p->ID ? 'selected="selected"' : ''; ?>><?php echo $p->post_title; ?></option>
+						<?php } ?>
+					</select>
+				</p>
 				
 				<p><label for="ag_termm"><?php _e("Message: " ); ?></label><input type="text"  name="ag_termm" size="40" value="<?php echo $dbtermm; ?>"><br><?php _e("<span class='mes'>This is the text that goes right after the checkbox</span>" ); ?></p>
 				<br>
@@ -81,10 +94,10 @@ margin-top: 2em;
 				<div class="checkboxes">
 								<p>
 				<h3><?php _e("Where should it be displayed? " ); ?></h3>
-					<input type="checkbox" id="ag_login" name="ag_login" value="1" <?php if($dblogin == 1) {echo 'checked';} ?> /> <label for="ag_login">Login form</label><br>
+					<input type="checkbox" id="ag_login" name="ag_login" value="1" <?php if($dblogin == 1) {echo 'checked';} ?> /> <label for="ag_login"> Login form</label><br>
 					<input type="checkbox" id="ag_register" name="ag_register" value="1" <?php if($dbregister == 1) {echo 'checked';} ?> /> <label for="ag_register">Registration form</label>
 					</p>
-				</div>
+				</div>				
 			
 				<p class="submit">
 				<input type="submit" name="Submit" value="<?php _e('Update Options', 'ag_trdom' ) ?>" />

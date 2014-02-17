@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.2.1
+Version: 0.2.2
 Author: buildcreate
 Author URI: http://buildcreate.com
 */
@@ -13,12 +13,10 @@ function wp_authenticate_user_acc($user) {
 	$dblogin = get_option('ag_login');
 	$dbregister = get_option('ag_register');
 	$dbfail = get_option('ag_fail');
-	$body_class = get_body_class();
-	$login_page = get_option('ag_login_page');
-	$register_page = get_option('ag_register_page');
 	
-	global $bp, $post;
-	isset($post) ? $pid = $post->ID : $pid = NULL;
+	global $bp;
+	
+	if(isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == "login" && $dblogin == 1 || isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == 'register' && $dbregister == 1) {
 		  
 		  // See if the checkbox #login_accept was checked
 	    if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
@@ -36,6 +34,9 @@ function wp_authenticate_user_acc($user) {
 	        
 	        return $error;
 	    }
+	} else {
+		return $user;
+	}
 
 }
 
@@ -44,15 +45,9 @@ add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
 add_filter('registration_errors', 'wp_authenticate_user_acc', 99999, 2);
 add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 99999, 2);
 
-function display_terms_form() {
+function display_terms_form($type) {
 	$dbtermm = get_option('ag_termm');
 	$dburl = get_option('ag_url');
-	
-	global $post;
-	isset($post) ? $pid = $post->ID : $pid = NULL;
-	$body_class = get_body_class();
-	
-	global $bp;
  
    if(isset($dburl)) {$terms = get_post($dburl); $terms = apply_filters('the_content', $terms->post_content);}    
  
@@ -64,7 +59,7 @@ function display_terms_form() {
  	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
  		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
  	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="thickbox" target="_BLANK" href="#TB_inline?width=600&height=550&inlineId=terms">'.$dbtermm.'</a></label></div>';
- 	
+ 	echo '<input type="hidden" value="'.$type.'" name="ag_type" />';
  	echo '<div id="terms"><div>'.$terms.'</div></div>';
 }
 
@@ -72,7 +67,7 @@ function login_terms_accept(){
 	$dblogin = get_option('ag_login');
 	
 	if($dblogin == 1) {
-		display_terms_form();
+		display_terms_form('login');
 	}
 }
 
@@ -81,7 +76,7 @@ function register_terms_accept() {
 	$dbregister = get_option('ag_register');
 	
 	if($dbregister == 1) {
-		display_terms_form();
+		display_terms_form('register');
 	}
 }
 
@@ -96,7 +91,7 @@ function ag_widget_terms_accept() {
 	$dblogin = get_option('ag_login');
 	
 	if($dblogin == 1) {
-		display_terms_form();
+		display_terms_form('login');
 	}
 	
 	echo '<script>';

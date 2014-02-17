@@ -100,7 +100,7 @@ margin-top: 2em;
 				</div>				
 			
 				<p class="submit">
-				<input type="submit" name="Submit" value="<?php _e('Update Options', 'ag_trdom' ) ?>" />
+				<input type="submit" class="button button-large button-primary" name="Submit" value="<?php _e('Update Options', 'ag_trdom' ) ?>" />
 				</p>
 			</form>
 

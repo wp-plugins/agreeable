@@ -32,8 +32,8 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
-= 0.2.1 =
-* Issue with login pages that also have login widgets on them
+= 0.2.2 =
+* Fixed issue with form validation
 
 = 0.2 =
 * Resolved a few warnings and notices that were cropping up

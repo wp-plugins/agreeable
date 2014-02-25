@@ -32,6 +32,10 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+= 0.2.3 =
+* Fixed issue with BuddyPress login widget no validating
+* Fixed issue with Theme My Login additional fields coming AFTER the checkbox
+
 = 0.2.2 =
 * Fixed issue with form validation
 

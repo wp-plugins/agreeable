@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.2.2
+Version: 0.2.3
 Author: buildcreate
 Author URI: http://buildcreate.com
 */
@@ -13,7 +13,7 @@ function wp_authenticate_user_acc($user) {
 	$dblogin = get_option('ag_login');
 	$dbregister = get_option('ag_register');
 	$dbfail = get_option('ag_fail');
-	
+
 	global $bp;
 	
 	if(isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == "login" && $dblogin == 1 || isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == 'register' && $dbregister == 1) {
@@ -58,8 +58,8 @@ function display_terms_form($type) {
  	echo '<style>#terms{display: none} #TB_ajaxContent p {font-weight: 200; line-height: 1.5em;}</style>';
  	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
  		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
- 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="thickbox" target="_BLANK" href="#TB_inline?width=600&height=550&inlineId=terms">'.$dbtermm.'</a></label></div>';
- 	echo '<input type="hidden" value="'.$type.'" name="ag_type" />';
+ 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="thickbox" target="_BLANK" href="#TB_inline?width=600&height=550&inlineId=terms">'.$dbtermm.'</a></label>';
+ 	echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
  	echo '<div id="terms"><div>'.$terms.'</div></div>';
 }
 
@@ -78,13 +78,26 @@ function register_terms_accept() {
 	if($dbregister == 1) {
 		display_terms_form('register');
 	}
+	
+	echo '<script>';
+		echo '
+			jQuery(document).ready(function($){
+				if($("#theme-my-login")) {
+					$("#theme-my-login #terms-accept").insertBefore("#theme-my-login .submit");
+				}
+			});
+		';
+	echo '</script>';
+	
 }
 
 // As part of WP login form construction, call our function
-add_filter ( 'login_form', 'login_terms_accept' );
-add_filter ( 'register_form', 'register_terms_accept' );
+add_filter( 'login_form', 'login_terms_accept' );
+add_filter( 'register_form', 'register_terms_accept');
 add_action('bp_before_registration_submit_buttons', 'register_terms_accept');
 
+
+add_action( 'plugins_loaded', 'bcrm_form_hooks');
 
 function ag_widget_terms_accept() {
 
@@ -97,8 +110,8 @@ function ag_widget_terms_accept() {
 	echo '<script>';
 		echo '
 			jQuery(document).ready(function($){
-				$(".widget_bp_core_login_widget #terms-accept").insertBefore("#bp-login-widget-rememberme");
-				$(".widget_bp_core_login_widget #bp-login-widget-form").nextAll(".terms-form").hide();
+				$(".widget_bp_core_login_widget #terms-accept").insertBefore("#bp-login-widget-form .forgetmenot");
+				$(".widget_bp_core_login_widget #bp-login-widget-form").nextAll(".terms-form").remove();
 			});
 		';
 	echo '</script>';

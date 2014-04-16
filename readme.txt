@@ -2,7 +2,7 @@
 Contributors: buildcreate, thesturs
 Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets
 Requires at least: 3.5 
-Tested up to: 3.8.1
+Tested up to: 3.9
 Stable tag: trunk
 License:GPLv2 or later
 Add an "Agree to terms" check box on login and/or registration pages.  Works with BuddyPress and bbPress

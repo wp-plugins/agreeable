@@ -1,23 +1,28 @@
 === Agreeable ===
 Contributors: buildcreate, thesturs
-Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets
+Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments
 Requires at least: 3.5 
-Tested up to: 3.9
+Tested up to: 3.9.1
 Stable tag: trunk
 License:GPLv2 or later
-Add an "Agree to terms" check box on login and/or registration pages.  Works with BuddyPress and bbPress
+Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress and bbPress
 
 == Description ==
 Add an "agree to terms" check box to your login and/or registration pages, requiring users to agree prior to logging in or registering. Tested with BuddyPress.  Based on the I-Agree plugin by thesturs.
 
 Use the form in the plugin settings page to contact us with feature requests, comments, or concerns.
 
-= New Features =
-* Now you select your terms page from a dropdown
-* Terms now open in a lightbox
+= New! =
+* Lightbox is now RESPONSIVE!  And prettier :)
+* Customize your lightbox background and text colors
+* Disable the lightbox if you want
+* Add the checkbox to your comment forms now too!
+
+= Features =
+* Select your terms page from a dropdown
+* Terms open in a lightbox or new tab
 * Tested with WP, BuddyPress, and bbPress login widgets
-* Updated error display for BuddyPress
-* Works with custom Login/Registration pages (like Theme My Login)
+* Customizable text and error message
 
 = Rated 4 stars by the WP Plugins A to Z podcast! =
 
@@ -31,6 +36,15 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 0.3 =
+* Lightbox is now responsive
+* Lightbox colors are customizable
+* Now you can include the terms on your comment form too
+* You can disable the lightbox now
+
+= 0.2.4 =
+* Misc bug fixes
 
 = 0.2.3 =
 * Fixed issue with BuddyPress login widget no validating

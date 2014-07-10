@@ -3,10 +3,21 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.2.4
+Version: 0.3
 Author: buildcreate
 Author URI: http://buildcreate.com
 */
+
+wp_enqueue_style( 'agreeable-css', plugins_url('css/agreeable.css', __FILE__));	
+
+
+function agreeable_lightbox() {
+	if (!is_admin()) {
+		wp_enqueue_script( 'magnific', plugins_url('js/magnific.js', __FILE__),'', '', true);
+		wp_enqueue_script( 'agreeable-js', plugins_url('js/agreeable.js', __FILE__), '', '', true);
+		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));	
+	}
+}
 
 function wp_authenticate_user_acc($user) {
 	
@@ -40,27 +51,68 @@ function wp_authenticate_user_acc($user) {
 
 }
 
+function ag_validate_comment($comment) {
+	
+	$dbcomments = get_option('ag_comments');
+	$dbfail = get_option('ag_fail');
+
+	global $bp;
+	
+	if($dbcomments == 1) {
+		  
+		  // See if the checkbox #login_accept was checked
+	    if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
+	        // Checkbox on, allow login
+	        return $comment;
+	    } else {
+	        // Did NOT check the box, do not allow login
+	        
+	        $error = new WP_Error();
+	        $error->add('did_not_accept', $dbfail);
+	        
+	        wp_die( __($dbfail) );
+	        return $error;
+	    }
+	} else {
+		return $comment;
+	}
+
+}
+
 // Add it to the appropriate hooks
 add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
 add_filter('registration_errors', 'wp_authenticate_user_acc', 99999, 2);
 add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 99999, 2);
+add_action('pre_comment_on_post', 'ag_validate_comment', 99999, 2);
 
 function display_terms_form($type) {
 	$dbtermm = get_option('ag_termm');
 	$dburl = get_option('ag_url');
+	$dblightbox = get_option('ag_lightbox');
+	$dbcolors = get_option('ag_colors');
  
-   if(isset($dburl)) {$terms = get_post($dburl); $terms = apply_filters('the_content', $terms->post_content);}    
+   if(isset($dburl)) {$terms = get_post($dburl); $terms_content = '<h3>'.$terms->post_title.'</h3>'.apply_filters('the_content', $terms->post_content);}    
  
  	// Add an element to the login form, which must be checked
  	
- 	agreeable_thickbox();
+ 	$term_link = get_post_permalink($terms);
  	
- 	echo '<style>#terms{display: none} #TB_ajaxContent p {font-weight: 200; line-height: 1.5em;}</style>';
+ 	if($dblightbox == 1) {
+ 	
+ 		agreeable_lightbox();
+ 		$term_link = '#terms';
+ 		
+ 		if($dbcolors) {
+	 		echo '<style>#terms {background: '.$dbcolors['bg-color'].' !important; color: '.$dbcolors['text-color'].';}</style>';
+ 		}		
+ 	}
+ 	
  	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
  		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
- 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="thickbox" target="_BLANK" href="#TB_inline?width=600&height=550&inlineId=terms">'.$dbtermm.'</a></label>';
+ 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="open-popup-link" target="_BLANK" href="'.$term_link.'">'.$dbtermm.'</a></label>';
  	echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
- 	echo '<div id="terms"><div>'.$terms.'</div></div>';
+ 	echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
+ 	echo $type == 'comments' ? '<br>':'';
 }
 
 function login_terms_accept(){
@@ -68,6 +120,14 @@ function login_terms_accept(){
 	
 	if($dblogin == 1) {
 		display_terms_form('login');
+	}
+}
+
+function comment_terms_accept(){
+	$dbcomments = get_option('ag_comments');
+	
+	if($dbcomments == 1) {
+		display_terms_form('comments');
 	}
 }
 
@@ -92,8 +152,10 @@ function register_terms_accept() {
 }
 
 // As part of WP login form construction, call our function
-add_filter( 'login_form', 'login_terms_accept' );
-add_filter( 'register_form', 'register_terms_accept');
+add_filter('login_form', 'login_terms_accept' );
+add_filter('register_form', 'register_terms_accept');
+add_filter('comment_form_after_fields', 'comment_terms_accept');
+
 add_action('bp_before_registration_submit_buttons', 'register_terms_accept');
 
 
@@ -117,13 +179,6 @@ function ag_widget_terms_accept() {
 }
 
 add_action('bp_after_login_widget_loggedout', 'ag_widget_terms_accept');
-
-function agreeable_thickbox() {
-	if (! is_admin()) {
-		wp_enqueue_script('thickbox', null,  array('jquery'));
-		wp_enqueue_style('thickbox.css', '/'.WPINC.'/js/thickbox/thickbox.css', null, '1.0');
-	}
-}
 
 function agreeable_options() {  
   add_options_page('agreeable', 'Agreeable', 'manage_options', 'terms-options', 'agoptions');

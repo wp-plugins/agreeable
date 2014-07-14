@@ -3,10 +3,18 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.3
+Version: 0.3.1
 Author: buildcreate
 Author URI: http://buildcreate.com
 */
+
+function ag_action_init() {
+	// Localization
+	load_plugin_textdomain('agreeable', false, basename( dirname( __FILE__ ) ) . '/languages' );
+}
+
+add_action('init', 'ag_action_init');
+
 
 wp_enqueue_style( 'agreeable-css', plugins_url('css/agreeable.css', __FILE__));	
 
@@ -19,11 +27,12 @@ function agreeable_lightbox() {
 	}
 }
 
-function wp_authenticate_user_acc($user) {
+function ag_authenticate_user_acc($user) {
 	
 	$dblogin = get_option('ag_login');
 	$dbregister = get_option('ag_register');
 	$dbfail = get_option('ag_fail');
+	$dbremember = get_option('ag_remember');
 
 	global $bp;
 	
@@ -32,18 +41,29 @@ function wp_authenticate_user_acc($user) {
 		  // See if the checkbox #login_accept was checked
 	    if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
 	        // Checkbox on, allow login
+	        
+				if ( !isset( $_COOKIE['agreeable_terms'] ) && $dbremember == 1 ) {
+					setcookie( 'agreeable_terms', 'yes', strtotime('+30 days'), COOKIEPATH, COOKIE_DOMAIN, false );
+				}
+	        
 	        return $user;
 	    } else {
-	        // Did NOT check the box, do not allow login
+	        // Did NOT check the box, lets see if the cookie is already set
 	        
-	        $error = new WP_Error();
-	        $error->add('did_not_accept', $dbfail);
-			  
-			  if(isset($bp->signup)) {
-	        		$bp->signup->errors['login_accept'] = '<div class="error">'.$dbfail.'</div>';
+	        if ( !isset($_COOKIE['agreeable_terms'] ) && $dbremember == 1 || $dbremember == 0) {
+	        	        	        
+		        $error = new WP_Error();
+		        $error->add('did_not_accept', $dbfail);
+				  
+				  if(isset($bp->signup)) {
+		        		$bp->signup->errors['login_accept'] = '<div class="error">'.$dbfail.'</div>';
+		        }
+		        
+		        return $error;
+		        
+	        } else {
+	        	return $user;
 	        }
-	        
-	        return $error;
 	    }
 	} else {
 		return $user;
@@ -80,63 +100,66 @@ function ag_validate_comment($comment) {
 }
 
 // Add it to the appropriate hooks
-add_filter('wp_authenticate_user', 'wp_authenticate_user_acc', 99999, 2);
-add_filter('registration_errors', 'wp_authenticate_user_acc', 99999, 2);
-add_filter('bp_signup_validate', 'wp_authenticate_user_acc', 99999, 2);
+add_filter('wp_authenticate_user', 'ag_authenticate_user_acc', 99999, 2);
+add_filter('registration_errors', 'ag_authenticate_user_acc', 99999, 2);
+add_filter('bp_signup_validate', 'ag_authenticate_user_acc', 99999, 2);
 add_action('pre_comment_on_post', 'ag_validate_comment', 99999, 2);
 
-function display_terms_form($type) {
+function ag_display_terms_form($type) {
 	$dbtermm = get_option('ag_termm');
 	$dburl = get_option('ag_url');
 	$dblightbox = get_option('ag_lightbox');
 	$dbcolors = get_option('ag_colors');
- 
-   if(isset($dburl)) {$terms = get_post($dburl); $terms_content = '<h3>'.$terms->post_title.'</h3>'.apply_filters('the_content', $terms->post_content);}    
- 
- 	// Add an element to the login form, which must be checked
- 	
- 	$term_link = get_post_permalink($terms);
- 	
- 	if($dblightbox == 1) {
- 	
- 		agreeable_lightbox();
- 		$term_link = '#terms';
- 		
- 		if($dbcolors) {
-	 		echo '<style>#terms {background: '.$dbcolors['bg-color'].' !important; color: '.$dbcolors['text-color'].';}</style>';
- 		}		
+	$dbremember = get_option('ag_remember');
+	
+	if ( !isset($_COOKIE['agreeable_terms'] ) && $dbremember == 1 || $dbremember == 0 ) {
+	   if(isset($dburl)) {$terms = get_post($dburl); $terms_content = '<h3>'.$terms->post_title.'</h3>'.apply_filters('the_content', $terms->post_content);}    
+	   
+	 	// Add an element to the login form, which must be checked
+	 	
+	 	$term_link = get_post_permalink($terms);
+	 	
+	 	if($dblightbox == 1) {
+	 	
+	 		agreeable_lightbox();
+	 		$term_link = '#terms';
+	 		
+	 		if($dbcolors) {
+		 		echo '<style>#terms {background: '.$dbcolors['bg-color'].' !important; color: '.$dbcolors['text-color'].';}</style>';
+	 		}		
+	 	}
+	 	
+	 	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
+	 		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
+	 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="open-popup-link" target="_BLANK" href="'.$term_link.'">'.$dbtermm.'</a></label>';
+	 	echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
+	 	echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
+	 	echo $type == 'comments' ? '<br>':'';
  	}
- 	
- 	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
- 		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
- 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="open-popup-link" target="_BLANK" href="'.$term_link.'">'.$dbtermm.'</a></label>';
- 	echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
- 	echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
- 	echo $type == 'comments' ? '<br>':'';
 }
 
-function login_terms_accept(){
+function ag_login_terms_accept(){
 	$dblogin = get_option('ag_login');
 	
 	if($dblogin == 1) {
-		display_terms_form('login');
+		ag_display_terms_form('login');
 	}
 }
 
-function comment_terms_accept(){
+function ag_comment_terms_accept(){
 	$dbcomments = get_option('ag_comments');
 	
 	if($dbcomments == 1) {
-		display_terms_form('comments');
+		ag_display_terms_form('comments');
 	}
 }
 
-function register_terms_accept() {
+function ag_register_terms_accept() {
 	
 	$dbregister = get_option('ag_register');
 	
 	if($dbregister == 1) {
-		display_terms_form('register');
+		ag_display_terms_form('register');
 	}
 	
 	echo '<script>';
@@ -152,11 +175,11 @@ function register_terms_accept() {
 }
 
 // As part of WP login form construction, call our function
-add_filter('login_form', 'login_terms_accept' );
-add_filter('register_form', 'register_terms_accept');
-add_filter('comment_form_after_fields', 'comment_terms_accept');
+add_filter('login_form', 'ag_login_terms_accept' );
+add_filter('register_form', 'ag_register_terms_accept');
+add_filter('comment_form_after_fields', 'ag_comment_terms_accept');
 
-add_action('bp_before_registration_submit_buttons', 'register_terms_accept');
+add_action('bp_before_registration_submit_buttons', 'ag_register_terms_accept');
 
 
 function ag_widget_terms_accept() {
@@ -164,7 +187,7 @@ function ag_widget_terms_accept() {
 	$dblogin = get_option('ag_login');
 	
 	if($dblogin == 1) {
-		display_terms_form('login');
+		ag_display_terms_form('login');
 	}
 	
 	echo '<script>';
@@ -194,20 +217,22 @@ add_action('admin_menu', 'agreeable_options');
 
 /* Plugin feedback form */
 
-function feedback_form() {
+function ag_feedback_form() {
 	
 	if(!isset($_POST['feedback_email']) && !isset($_POST['feedback_content'])) {
 	
+/*
 	$output = '<h3>We want your feedback.</h3>
 				<p><em>Have a feature idea, feedback, or question about the plugin?<br>We want to know- send it on over!</em></p>
-				<form id="feedback-form" name="feedback_form" method="post" action="'.str_replace( '%7E', '~', $_SERVER['REQUEST_URI']).'">
+				<form id="ag-feedback-form" name="feedback_form" method="post" action="'.str_replace( '%7E', '~', $_SERVER['REQUEST_URI']).'">
 				<label for="feedback_email">Your email</label>
 					<input type="email" name="feedback_email" placeholder="your@email.com" /><br>
 				<label for="feedback_content">Message</label>
 					<textarea name="feedback_content" placeholder="Type your feedback / feature request here!"></textarea><br>
 					<input type="submit" class="button-primary button-large button" style="margin-top: 1em;" value="Send it!" />			
 				</form>';
-	$output .= '<div style="padding: 1em; background: #eee; color: #333; margin-top: 2em;">
+*/
+	$output .= '<div style="padding: 1em; background: #eee; color: #333;">
 					<h3 style="color: #369;">Buy me a cup of joe?</h3>
 					<p>
 						<em>Feeling generous?  Because I sure wouldn\'t turn down a hot cup of coffee...</em>
@@ -227,7 +252,7 @@ function feedback_form() {
 	echo $output;
 }
 
-function send_feedback() {
+function ag_send_feedback() {
 	if(isset($_POST['feedback_email']) && isset($_POST['feedback_content'])) {
 		
 		$to = 'ian@buildcreate.com';
@@ -241,4 +266,4 @@ function send_feedback() {
 	}
 }
 
-add_action( 'plugins_loaded', 'send_feedback');
+add_action( 'plugins_loaded', 'ag_send_feedback');

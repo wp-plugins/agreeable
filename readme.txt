@@ -37,6 +37,11 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+= 0.3.1 =
+* Misc tweaks
+* Added the ability to remember a user's agreement for 30 days
+* Plugin is now localized and ready for translations- Spanish translation coming in 0.3.2
+
 = 0.3 =
 * Lightbox is now responsive
 * Lightbox colors are customizable

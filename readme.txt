@@ -17,6 +17,7 @@ Use the form in the plugin settings page to contact us with feature requests, co
 * Customize your lightbox background and text colors
 * Disable the lightbox if you want
 * Add the checkbox to your comment forms now too!
+* Spanish translation available, more to come!
 
 = Features =
 * Select your terms page from a dropdown
@@ -36,6 +37,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 0.3.2 =
+* Added Spanish translation!  Thank you Andrew Kurtis for translating!
 
 = 0.3.1 =
 * Misc tweaks

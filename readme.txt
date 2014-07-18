@@ -17,13 +17,16 @@ Use the form in the plugin settings page to contact us with feature requests, co
 * Customize your lightbox background and text colors
 * Disable the lightbox if you want
 * Add the checkbox to your comment forms now too!
-* Spanish translation available, more to come!
 
 = Features =
 * Select your terms page from a dropdown
 * Terms open in a lightbox or new tab
 * Tested with WP, BuddyPress, and bbPress login widgets
 * Customizable text and error message
+
+= Translations =
+* Spanish (Andrew Kurtis, webhostinghub.com)
+* Farsi (FarzaM, iranianswed.com)
 
 = Rated 4 stars by the WP Plugins A to Z podcast! =
 
@@ -37,6 +40,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 0.3.3 =
+* Added Farsi translation!
 
 = 0.3.2 =
 * Added Spanish translation!  Thank you Andrew Kurtis for translating!

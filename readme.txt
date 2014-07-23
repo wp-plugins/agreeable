@@ -1,5 +1,5 @@
 === Agreeable ===
-Contributors: buildcreate, thesturs
+Contributors: kraftpress, buildcreate, thesturs
 Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments
 Requires at least: 3.5 
 Tested up to: 3.9.1

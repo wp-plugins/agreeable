@@ -41,6 +41,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+= 3.4.2 =
+* Fixed WooCommerce registration bug
+
 = 3.4.1 =
 * Fixed RTL Bug
 

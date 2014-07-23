@@ -3,4 +3,10 @@ jQuery(document).ready(function($) {
 	  type:'inline',
 	  midClick: true
 	});	
+	
+	if($('.woocommerce .login')) {
+		$(".woocommerce>#terms-accept").insertBefore(".woocommerce .login #rememberme");
+
+	}
+	
 });

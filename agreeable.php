@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.3.4.1
+Version: 0.3.4.2
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -20,15 +20,19 @@ function ag_admin() {
 
 function ag_front() {
 	/* Only load lightbox code on the frontend, where we need it */
+		if ( is_login_page() ) {
+			wp_enqueue_script('jquery');
+		}
 		wp_enqueue_script( 'magnific', plugins_url('js/magnific.js', __FILE__),'', '', true);
 		wp_enqueue_script( 'agreeable-js', plugins_url('js/agreeable.js', __FILE__), '', '', true);
 		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));
-		wp_enqueue_style( 'magnific', plugins_url('css/front.css', __FILE__));	
+		wp_enqueue_style( 'agreeable-css', plugins_url('css/front.css', __FILE__));	
 }
 
 add_action('init', 'ag_language_init');
 add_action('admin_enqueue_scripts', 'ag_admin');
 add_action('wp_enqueue_scripts', 'ag_front');
+add_action('login_enqueue_scripts', 'ag_front');
 
 function ag_authenticate_user_acc($user) {
 	
@@ -72,6 +76,29 @@ function ag_authenticate_user_acc($user) {
 		return $user;
 	}
 
+}
+
+add_filter('woocommerce_registration_errors', 'ag_woocommerce_reg_validation', 10,3);
+
+function ag_woocommerce_reg_validation($reg_errors, $sanitized_user_login, $user_email) {
+    global $woocommerce;
+    $dbfail = get_option('ag_fail');
+    
+    if(!isset($_REQUEST['login_accept'])) {
+    
+	    if ( !isset($_COOKIE['agreeable_terms'] ) && $dbremember == 1 || $dbremember == 0) {
+	    		  return new WP_Error('registration-error', __($dbfail, 'woocommerce'));
+		  		  $woocommerce->add_error( __( $dbfail, 'woocommerce' ) );
+	  		  } else {
+
+			 }
+    }
+    
+	if ( !isset( $_COOKIE['agreeable_terms'] ) && $dbremember == 1 ) {
+		setcookie( 'agreeable_terms', 'yes', strtotime('+30 days'), COOKIEPATH, COOKIE_DOMAIN, false );
+	}
+   
+   return $reg_errors;
 }
 
 function ag_validate_comment($comment) {
@@ -176,8 +203,10 @@ function ag_register_terms_accept() {
 	
 }
 
+
 // As part of WP login form construction, call our function
 add_filter('login_form', 'ag_login_terms_accept' );
+add_filter('woocommerce_after_customer_login_form', 'ag_login_terms_accept');
 add_filter('register_form', 'ag_register_terms_accept');
 add_filter('comment_form_after_fields', 'ag_comment_terms_accept');
 
@@ -269,3 +298,7 @@ function ag_send_feedback() {
 }
 
 add_action( 'plugins_loaded', 'ag_send_feedback');
+
+function is_login_page() {
+    return in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'));
+}

@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 3.9.1
 Stable tag: trunk
 License:GPLv2 or later
-Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress and bbPress
+Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress and bbPress.
 
 == Description ==
 Add an "agree to terms" check box to your login and/or registration pages, requiring users to agree prior to logging in or registering. Tested with BuddyPress.  Based on the I-Agree plugin by thesturs.
@@ -40,6 +40,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 3.4.1 =
+* Fixed RTL Bug
 
 = 0.3.3 =
 * Added Farsi translation!

@@ -3,29 +3,32 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.3.4
-Author: buildcreate
-Author URI: http://buildcreate.com
+Version: 0.3.4.1
+Author: kraftpress
+Author URI: http://kraftpress.it
 */
 
-function ag_action_init() {
+function ag_language_init() {
 	// Localization
 	load_plugin_textdomain('agreeable', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 
-add_action('init', 'ag_action_init');
+function ag_admin() {
+	/* Plugin Stylesheet */
+	wp_enqueue_style( 'agreeable-css', plugins_url('css/admin.css', __FILE__), '', '0.3.4', 'screen');
+}
 
-
-wp_enqueue_style( 'agreeable-css', plugins_url('css/agreeable.css', __FILE__));	
-
-
-function agreeable_lightbox() {
-	if (!is_admin()) {
+function ag_front() {
+	/* Only load lightbox code on the frontend, where we need it */
 		wp_enqueue_script( 'magnific', plugins_url('js/magnific.js', __FILE__),'', '', true);
 		wp_enqueue_script( 'agreeable-js', plugins_url('js/agreeable.js', __FILE__), '', '', true);
-		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));	
-	}
+		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));
+		wp_enqueue_style( 'magnific', plugins_url('css/front.css', __FILE__));	
 }
+
+add_action('init', 'ag_language_init');
+add_action('admin_enqueue_scripts', 'ag_admin');
+add_action('wp_enqueue_scripts', 'ag_front');
 
 function ag_authenticate_user_acc($user) {
 	
@@ -121,7 +124,6 @@ function ag_display_terms_form($type) {
 	 	
 	 	if($dblightbox == 1) {
 	 	
-	 		agreeable_lightbox();
 	 		$term_link = '#terms';
 	 		
 	 		if($dbcolors) {

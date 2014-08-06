@@ -41,10 +41,14 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
-= 3.4.2 =
+= 0.4 =
+* Fixed Multisite registration bug
+* Fixed error display bug
+
+= 0.3.4.2 =
 * Fixed WooCommerce registration bug
 
-= 3.4.1 =
+= 0.3.4.1 =
 * Fixed RTL Bug
 
 = 0.3.3 =

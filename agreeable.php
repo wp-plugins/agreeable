@@ -3,10 +3,17 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.3.4.2
+Version: 0.4
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+session_start();
 
 function ag_language_init() {
 	// Localization
@@ -59,16 +66,32 @@ function ag_authenticate_user_acc($user) {
 	        
 	        if ( !isset($_COOKIE['agreeable_terms'] ) && $dbremember == 1 || $dbremember == 0) {
 	        	        	        
-		        $error = new WP_Error();
-		        $error->add('did_not_accept', $dbfail);
+		        $errors = new WP_Error();
+		        $errors->add('ag_did_not_accept', $dbfail);
+		        
+		        $_SESSION['ag_errors'] = $dbfail;
+		        
 				  
-				  if(isset($bp->signup)) {
+				  if(isset($bp)) {
 		        		$bp->signup->errors['login_accept'] = '<div class="error">'.$dbfail.'</div>';
 		        }
 		        
-		        return $error;
+		        
+		        if(is_multisite()) {
+					  
+					  $result['errors'] = $errors;
+					  $result['errors']->add('ag_did_not_accept', $dbfail);
+					  
+					  return $result;
+					  
+					} else {
+		        
+		        		return $errors;
+				  	
+				  	}
 		        
 	        } else {
+	        unset($_SESSION['ag_errors']);
 	        	return $user;
 	        }
 	    }
@@ -77,6 +100,8 @@ function ag_authenticate_user_acc($user) {
 	}
 
 }
+
+
 
 add_filter('woocommerce_registration_errors', 'ag_woocommerce_reg_validation', 10,3);
 
@@ -135,12 +160,15 @@ add_filter('registration_errors', 'ag_authenticate_user_acc', 99999, 2);
 add_filter('bp_signup_validate', 'ag_authenticate_user_acc', 99999, 2);
 add_action('pre_comment_on_post', 'ag_validate_comment', 99999, 2);
 
-function ag_display_terms_form($type) {
+add_filter('wpmu_validate_user_signup','ag_authenticate_user_acc',10,3);
+
+function ag_display_terms_form($type, $errors = '') {
 	$dbtermm = get_option('ag_termm');
 	$dburl = get_option('ag_url');
 	$dblightbox = get_option('ag_lightbox');
 	$dbcolors = get_option('ag_colors');
 	$dbremember = get_option('ag_remember');
+	$dbfail = get_option('ag_fail');
 	
 	if ( !isset($_COOKIE['agreeable_terms'] ) && $dbremember == 1 || $dbremember == 0 ) {
 	   if(isset($dburl)) {$terms = get_post($dburl); $terms_content = '<h3>'.$terms->post_title.'</h3>'.apply_filters('the_content', $terms->post_content);}    
@@ -158,6 +186,26 @@ function ag_display_terms_form($type) {
 	 		}		
 	 	}
 	 	
+/* 	 Get our errors incase we need to display */
+		
+		if(is_wp_error($errors)) {
+			
+				$error = $errors->get_error_message( 'ag_did_not_accept' );
+			
+			}
+		
+		if(isset($_SESSION['ag_errors'])) {
+			
+				$error = $_SESSION['ag_errors'];
+				unset($_SESSION['ag_errors']);
+			}
+			
+		if ( !empty($error) ) {
+			
+				echo "<br><p class='error'>$error</p>";		
+				
+			}
+	
 	 	echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
 	 		if(isset($bp)){do_action( 'bp_login_accept_errors' );}
 	 	echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" />&nbsp;<a title="'.get_post($dburl)->post_title.'" class="open-popup-link" target="_BLANK" href="'.$term_link.'">'.$dbtermm.'</a></label>';
@@ -167,11 +215,11 @@ function ag_display_terms_form($type) {
  	}
 }
 
-function ag_login_terms_accept(){
+function ag_login_terms_accept($errors){
 	$dblogin = get_option('ag_login');
 	
 	if($dblogin == 1) {
-		ag_display_terms_form('login');
+		ag_display_terms_form('login', $errors);
 	}
 }
 
@@ -183,12 +231,12 @@ function ag_comment_terms_accept(){
 	}
 }
 
-function ag_register_terms_accept() {
+function ag_register_terms_accept($errors) {
 	
 	$dbregister = get_option('ag_register');
 	
 	if($dbregister == 1) {
-		ag_display_terms_form('register');
+		ag_display_terms_form('register', $errors);
 	}
 	
 	echo '<script>';
@@ -211,6 +259,13 @@ add_filter('register_form', 'ag_register_terms_accept');
 add_filter('comment_form_after_fields', 'ag_comment_terms_accept');
 
 add_action('bp_before_registration_submit_buttons', 'ag_register_terms_accept');
+
+add_action( 'tml_register_form', 'ag_register_terms_accept', 9999, 3);
+
+if (is_multisite()) {
+	add_action( 'signup_extra_fields', 'ag_register_terms_accept', 9999, 3);
+	add_action( 'signup_blogform', 'ag_register_terms_accept', 9999, 3);
+}
 
 
 function ag_widget_terms_accept() {
@@ -250,19 +305,7 @@ add_action('admin_menu', 'agreeable_options');
 
 function ag_feedback_form() {
 	
-	if(!isset($_POST['feedback_email']) && !isset($_POST['feedback_content'])) {
 	
-/*
-	$output = '<h3>We want your feedback.</h3>
-				<p><em>Have a feature idea, feedback, or question about the plugin?<br>We want to know- send it on over!</em></p>
-				<form id="ag-feedback-form" name="feedback_form" method="post" action="'.str_replace( '%7E', '~', $_SERVER['REQUEST_URI']).'">
-				<label for="feedback_email">Your email</label>
-					<input type="email" name="feedback_email" placeholder="your@email.com" /><br>
-				<label for="feedback_content">Message</label>
-					<textarea name="feedback_content" placeholder="Type your feedback / feature request here!"></textarea><br>
-					<input type="submit" class="button-primary button-large button" style="margin-top: 1em;" value="Send it!" />			
-				</form>';
-*/
 	$output .= '<div style="padding: 1em; background: #eee; color: #333;">
 					<h3 style="color: #369;">Buy me a cup of joe?</h3>
 					<p>
@@ -276,9 +319,6 @@ function ag_feedback_form() {
 							<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 						</form>
 					</p></div>';
-	} else {
-		$output = '<h3>Thank you for your feedback!</h3>';
-	}
 	
 	echo $output;
 }

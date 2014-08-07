@@ -1,11 +1,11 @@
 === Agreeable ===
 Contributors: kraftpress, buildcreate, thesturs
-Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments
+Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments, multisite
 Requires at least: 3.5 
 Tested up to: 3.9.1
 Stable tag: trunk
 License:GPLv2 or later
-Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress and bbPress.
+Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress, bbPress and MultiSite.
 
 == Description ==
 Add an "agree to terms" check box to your login and/or registration pages, requiring users to agree prior to logging in or registering. Tested with BuddyPress.  Based on the I-Agree plugin by thesturs.

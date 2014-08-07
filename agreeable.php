@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 0.4
+Version: 1.2
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -305,6 +305,7 @@ add_action('admin_menu', 'agreeable_options');
 
 function ag_feedback_form() {
 	
+	$output = '';
 	
 	$output .= '<div style="padding: 1em; background: #eee; color: #333;">
 					<h3 style="color: #369;">Buy me a cup of joe?</h3>

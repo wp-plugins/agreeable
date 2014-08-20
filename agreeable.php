@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 1.3
+Version: 1.3.1
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -34,7 +34,6 @@ class Agreeable {
 		add_action('wp_enqueue_scripts', array($this, 'ag_front'));
 		add_action('login_enqueue_scripts', array($this, 'ag_front'));
 		add_action('admin_menu', array($this, 'agreeable_options'));
-		add_action( 'plugins_loaded', array($this, 'ag_send_feedback'));
 
 		/* Registration Validation Hooks  */
 		add_filter('woocommerce_registration_errors', array($this, 'ag_woocommerce_reg_validation'), 10,3);
@@ -181,7 +180,7 @@ class Agreeable {
 
 	function is_buddypress_registration() {
 
-		if(function_exists(bp_current_component()) && bp_current_component()) {
+		if(function_exists('bp_current_component')) {
 				
 			/* Lets make sure we're on the right page- Ie the buddypress register page */
 			$bp_pages = get_option('bp-pages');
@@ -361,45 +360,10 @@ class Agreeable {
 		include('agreeable-options.php');
 	}
 
-	// Add to the admin menu
+	/* Plugin cross promotion area */
 
-
-
-	/* Plugin feedback form */
-
-	function ag_feedback_form() {
-
-		$output = '';
-
-		$output .= '<div style="padding: 1em; background: #eee; color: #333;">
-						<h3 style="color: #369;">Buy me a cup of joe?</h3>
-						<p>
-							<em>Feeling generous?  Because I sure wouldn\'t turn down a hot cup of coffee...</em>
-						</p>
-						<p>
-							<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-								<input type="hidden" name="cmd" value="_s-xclick">
-								<input type="hidden" name="hosted_button_id" value="LCNWR8KVE3UVL">
-								<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-								<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-							</form>
-						</p></div>';
-
-		echo $output;
-	}
-
-	function ag_send_feedback() {
-		if(isset($_POST['feedback_email']) && isset($_POST['feedback_content'])) {
-
-			$to = 'ian@buildcreate.com';
-			$subject = 'New plugin feedback';
-			$message = $_POST['feedback_content'];
-			$headers = 'From: <'.$_POST['feedback_email'].'>' . "\r\n";
-
-
-			wp_mail( $to, $subject, $message, $headers, '' );
-
-		}
+	function cross_promotions($plugin) {
+		include('kp_cross_promote.php');
 	}
 
 	function is_login_page() {

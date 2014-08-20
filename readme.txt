@@ -28,7 +28,7 @@ Use the form in the plugin settings page to contact us with feature requests, co
 * Spanish (Andrew Kurtis, webhostinghub.com)
 * Farsi (FarzaM, iranianswed.com)
 
-= Rated 4 stars by the WP Plugins A to Z podcast! =
+= Please rate and review us, every one counts! =
 
 == Screenshots ==
 1. Login 
@@ -40,6 +40,10 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 1.3 = 
+* Refactored plugin code in preparation for extensions
+* Changed Remember Me function to simple leave the box checked instead of bypassing the form entirely
 
 = 0.4 =
 * Fixed Multisite registration bug

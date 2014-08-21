@@ -38,8 +38,8 @@
 			<div class="ag-plugin-banner">
 				<img src="<?php echo plugins_url('/images/banner.png', __FILE__); ?>" alt="Agreeable" />
 			</div>
-			<div class="ag_feedback_form">
-				<?php $this->ag_feedback_form(); ?>
+			<div class="kp-cross-promote-area">
+				<?php $this->cross_promotions('agreeable'); ?>
 			</div>
 			
 			
@@ -94,7 +94,10 @@
 						<br>
 						<input type="checkbox" id="ag_comments" name="ag_comments" value="1" <?php if($this->options['comments'] == 1) {echo 'checked';} ?> /> <label for="ag_comments"><?php _e("Comment form", 'agreeable'); ?></label>
 					</p>
-				</div>				
+				</div>	
+				
+				<?php do_action('agreeable_settings'); ?>
+							
 			
 				<p class="submit">
 				<input type="submit" class="button button-large button-primary" name="Submit" value="<?php _e('Update Options', 'agreeable' ) ?>" />

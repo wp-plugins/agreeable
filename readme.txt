@@ -19,7 +19,7 @@ Use the form in the plugin settings page to contact us with feature requests, co
 * Customizable text and error message
 
 = Extensions =
-* [Agreeable Records] (http://kraftpress.it/downloads/agreeable-records/, "Agreeable Records Premium Plugin Extension") allows you to track user agreement by IP and username each time they log in.
+* Agreeable Records - Allows you to track user agreement by IP and username each time they log in. Learn more and purchase at: http://kraftpress.it/downloads/agreeable-records/
 
 = Translations =
 * Spanish (Andrew Kurtis, webhostinghub.com)

@@ -8,21 +8,18 @@ License:GPLv2 or later
 Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress, bbPress and MultiSite.
 
 == Description ==
-Add an "agree to terms" check box to your login and/or registration pages, requiring users to agree prior to logging in or registering. Tested with BuddyPress.  Based on the I-Agree plugin by thesturs.
+Add an "agree to terms" check box to your login, registration, or comment forms, requiring users to agree. Tested with BuddyPress and Multisite.  Based on the I-Agree plugin by thesturs.
 
 Use the form in the plugin settings page to contact us with feature requests, comments, or concerns.
 
-= New! =
-* Lightbox is now RESPONSIVE!  And prettier :)
-* Customize your lightbox background and text colors
-* Disable the lightbox if you want
-* Add the checkbox to your comment forms now too!
-
 = Features =
 * Select your terms page from a dropdown
-* Terms open in a lightbox or new tab
+* Terms open in a responsive lightbox or new tab
 * Tested with WP, BuddyPress, and bbPress login widgets
 * Customizable text and error message
+
+= Extensions =
+* [Agreeable Records] (http://kraftpress.it/downloads/agreeable-records/, "Agreeable Records Premium Plugin Extension") allows you to track user agreement by IP and username each time they log in.
 
 = Translations =
 * Spanish (Andrew Kurtis, webhostinghub.com)
@@ -40,6 +37,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 1.3.3 =
+* Misc Multisite and BuddyPress bug fixes
 
 = 1.3 = 
 * Refactored plugin code in preparation for extensions

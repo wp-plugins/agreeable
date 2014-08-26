@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 1.3.2
+Version: 1.3.3
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -29,7 +29,7 @@ class Agreeable {
 	function __construct() {
 
 		/* Initialize the plugin */
-		add_action('init', array($this, 'ag_language_init'));
+		add_action('init', array($this, 'init'));
 		add_action('admin_enqueue_scripts', array($this, 'ag_admin'));
 		add_action('wp_enqueue_scripts', array($this, 'ag_front'));
 		add_action('login_enqueue_scripts', array($this, 'ag_front'));
@@ -57,11 +57,6 @@ class Agreeable {
 		add_action('bp_before_registration_submit_buttons', array($this, 'ag_register_terms_accept'));
 		add_action('tml_register_form', array($this, 'ag_register_terms_accept'), 10, 3);
 		add_action('bp_after_login_widget_loggedout', array($this, 'ag_widget_terms_accept'));
-
-		if (is_multisite()) {
-			add_action( 'signup_extra_fields', 'ag_register_terms_accept', 10, 3);
-			add_action( 'signup_blogform', 'ag_register_terms_accept', 10, 3);
-		}
 
 		$this->options = array(
 			'login' => get_option('ag_login'),
@@ -93,25 +88,35 @@ class Agreeable {
 
 	}
 
-	function ag_language_init() {
+	function init() {
 		// Localization
 		load_plugin_textdomain('agreeable', false, basename( dirname( __FILE__ ) ) . '/languages' );
+		
+		if (is_multisite()) {
+			add_action( 'signup_extra_fields', array($this, 'ag_register_terms_accept'), 10, 3);
+			add_action( 'signup_blogform', array($this, 'ag_register_terms_accept'), 10, 3);
+		}
 	}
 
 	function ag_admin() {
+	
 		/* Plugin Stylesheet */
 		wp_enqueue_style( 'agreeable-css', plugins_url('css/admin.css', __FILE__), '', '0.3.4', 'screen');
+		
 	}
 
 	function ag_front() {
+	
 		/* Only load lightbox code on the frontend, where we need it */
 		if ( $this->is_login_page() ) {
 			wp_enqueue_script('jquery');
 		}
+		
 		wp_enqueue_script( 'magnific', plugins_url('js/magnific.js', __FILE__),'', '', true);
 		wp_enqueue_script( 'agreeable-js', plugins_url('js/agreeable.js', __FILE__), '', '', true);
 		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));
 		wp_enqueue_style( 'agreeable-css', plugins_url('css/front.css', __FILE__));
+		
 	}
 
 
@@ -159,10 +164,10 @@ class Agreeable {
 
 
 				if(is_multisite()) {
-
+					
+					$result = $user;
 					$result['errors'] = $errors;
-					$result['errors']->add('ag_did_not_accept', $this->options['fail_text']);
-
+					
 					return $result;
 
 				} else {
@@ -267,7 +272,7 @@ class Agreeable {
 
 		$errors = new WP_Error();
 
-		if(isset($_SESSION['ag_errors']) && $errors->get_error_message( 'ag_did_not_accept' ) != '' ) {
+		if(isset($_SESSION['ag_errors']) && $errors->get_error_message( 'ag_did_not_accept' ) == '' ) {
 
 			$error = $_SESSION['ag_errors'];
 			unset($_SESSION['ag_errors']);
@@ -322,18 +327,19 @@ class Agreeable {
 
 		if($this->options['register'] == 1) {
 			$this->ag_display_terms_form('register', $errors);
+			
+			echo '<script>';
+			echo '
+					jQuery(document).ready(function($){
+						if($("#theme-my-login")) {
+							$("#theme-my-login #terms-accept").insertBefore("#theme-my-login .submit");
+						}
+					});
+				';
+			echo '</script>';
+			
 		}
-
-		echo '<script>';
-		echo '
-				jQuery(document).ready(function($){
-					if($("#theme-my-login")) {
-						$("#theme-my-login #terms-accept").insertBefore("#theme-my-login .submit");
-					}
-				});
-			';
-		echo '</script>';
-
+		return;
 	}
 
 	function ag_widget_terms_accept() {

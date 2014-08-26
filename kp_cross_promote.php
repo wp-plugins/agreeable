@@ -35,6 +35,9 @@ $output = '';
 
 $output .= '<img id="kp-logo" src="http://kraftpress.it/wp-content/themes/kraftpress/img/kraftpress-logo.png" alt="Kraftpress Premium WordPress Plugins" width="80%" height="auto" />
 				<h3>Premium WordPress Plugins</h3><p>BUILT FROM SCRATCH WITH ❤</p>';
+
+if(isset($promotions)) {
+
 $output .= '<ul id="kp-cross-promote">';			
 	
 	foreach($promotions as $promo) {
@@ -50,6 +53,8 @@ $output .= '<ul id="kp-cross-promote">';
 	}
 
 $output .= '</ul><hr>';
+
+}
 
 $output .= '<p><a href="http://kraftpress.it" title="Kraftpress Premium WordPress Plugins & Themes">see more @ kraftpress.it</a></p>';
 

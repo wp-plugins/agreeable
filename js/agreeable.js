@@ -1,12 +1,14 @@
 jQuery(document).ready(function($) {
-	$('.open-popup-link').magnificPopup({
-	  type:'inline',
-	  midClick: true
-	});	
+
+	$(document).on("DOMSubtreeModified", function(){
+		$('.ag-open-popup-link').magnificPopup({
+		  type:'inline',
+		  midClick: true,
+		});
+	});
 	
 	if($('.woocommerce .login')) {
-		$(".woocommerce>#terms-accept").insertBefore(".woocommerce .login #rememberme");
-
+		$(".woocommerce>#agreeable_login_field").insertBefore(".woocommerce .login #rememberme");
 	}
-	
+			
 });

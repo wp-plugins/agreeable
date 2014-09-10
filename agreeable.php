@@ -2,8 +2,8 @@
 /*
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
-Description: Add a required "Agree to terms" checkbox to login and/or register forms.  Based on the I-Agree plugin by Michael Stursberg.
-Version: 1.3.4
+Description: Add a required "Agree to terms" checkbox to login and/or register forms.
+Version: 1.3.5
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -13,8 +13,6 @@ Author URI: http://kraftpress.it
 //! TODO-
 //! Cleanup functions, make it smarter, faster, better.
 //==================================
-
-
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -36,22 +34,18 @@ class Agreeable {
 		add_action('admin_menu', array($this, 'agreeable_options'));
 
 		/* Registration Validation Hooks  */
-		add_filter('woocommerce_registration_errors', array($this, 'ag_woocommerce_reg_validation'), 10,3);
 		add_filter('registration_errors', array($this, 'ag_authenticate_user_acc'), 10, 2);
 		add_filter('bp_signup_validate', array($this, 'ag_authenticate_user_acc'), 10, 2);
 		add_filter('wpmu_validate_user_signup', array($this, 'ag_authenticate_user_acc'), 10, 3);
 
-
 		/* Login Validation Hooks */
 		add_filter('wp_authenticate_user', array($this, 'ag_authenticate_user_acc'), 10, 2);
-
 
 		/* Comment Validation Hooks */
 		add_action('pre_comment_on_post', array($this, 'ag_validate_comment'), 10, 2);
 
 		/* Output Hooks */
 		add_filter('login_form', array($this, 'ag_login_terms_accept') );
-		add_filter('woocommerce_after_customer_login_form', array($this, 'ag_login_terms_accept'));
 		add_filter('register_form', array($this, 'ag_register_terms_accept'));
 		add_filter('comment_form_after_fields', array($this, 'ag_comment_terms_accept'));
 		add_action('bp_before_registration_submit_buttons', array($this, 'ag_register_terms_accept'));
@@ -72,8 +66,24 @@ class Agreeable {
 
 		return true;
 	}
-	
+
 	function update_options() {
+
+		if(isset($_POST['ag_hidden']) && $_POST['ag_hidden'] == 'Y') {
+
+			isset($_POST['ag_fail']) ? update_option('ag_fail', stripslashes($_POST['ag_fail'])) : update_option('ag_fail', '');
+			isset($_POST['ag_termm']) ? update_option('ag_termm', $_POST['ag_termm']) : update_option('ag_termm', '');
+			isset($_POST['ag_url']) ? update_option('ag_url', $_POST['ag_url']) : update_option('ag_url', '');
+			isset($_POST['ag_hidden']) ? update_option('ag_colors', array('text-color' => $_POST['ag_text_color'], 'bg-color' => $_POST['ag_bg_color'])) : update_option('ag_colors', array('text-color' => '#333', 'bg-color' => '#fafafa'));
+
+			isset($_POST['ag_login']) ? update_option('ag_login', $_POST['ag_login']) : update_option('ag_login', '');
+			isset($_POST['ag_register']) ? update_option('ag_register', $_POST['ag_register']) : update_option('ag_register', '');
+			isset($_POST['ag_comments']) ? update_option('ag_comments', $_POST['ag_comments']) : update_option('ag_comments', '');
+			isset($_POST['ag_lightbox']) ? update_option('ag_lightbox', $_POST['ag_lightbox']) : update_option('ag_lightbox', '');
+			isset($_POST['ag_remember']) ? update_option('ag_remember', $_POST['ag_remember']) : update_option('ag_remember', '');
+
+		}
+
 		$this->options = array(
 			'login' => get_option('ag_login'),
 			'register' => get_option('ag_register'),
@@ -91,90 +101,88 @@ class Agreeable {
 	function init() {
 		// Localization
 		load_plugin_textdomain('agreeable', false, basename( dirname( __FILE__ ) ) . '/languages' );
-		
+
 		if (is_multisite()) {
 			add_action( 'signup_extra_fields', array($this, 'ag_register_terms_accept'), 10, 3);
 			add_action( 'signup_blogform', array($this, 'ag_register_terms_accept'), 10, 3);
 		}
+
+		$this->update_options();
+
 	}
 
 	function ag_admin() {
-	
+
 		/* Plugin Stylesheet */
 		wp_enqueue_style( 'agreeable-css', plugins_url('css/admin.css', __FILE__), '', '0.3.4', 'screen');
-		
+
 	}
 
 	function ag_front() {
-	
+
 		/* Only load lightbox code on the frontend, where we need it */
 		if ( $this->is_login_page() ) {
 			wp_enqueue_script('jquery');
 		}
-		
+
 		wp_enqueue_script( 'magnific', plugins_url('js/magnific.js', __FILE__),'', '', true);
 		wp_enqueue_script( 'agreeable-js', plugins_url('js/agreeable.js', __FILE__), '', '', true);
 		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));
 		wp_enqueue_style( 'agreeable-css', plugins_url('css/front.css', __FILE__));
-		
+
 	}
-
-
-
 
 	function ag_authenticate_user_acc($user) {
 
 
 		if(isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == "login" && $this->options['login'] == 1 || isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == 'register' && $this->options['register'] == 1) {
 
-			// See if the checkbox #login_accept was checked
-			if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
+			// See if the checkbox #ag_login_accept was checked
+			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 1) {
 
 				// Checkbox on, allow login, set the cookie if necessary
 
 				if ( !isset( $_COOKIE['agreeable_terms'] ) && $this->options['remember_me'] == 1 ) {
 					setcookie( 'agreeable_terms', 'yes', strtotime('+30 days'), COOKIEPATH, COOKIE_DOMAIN, false );
 				}
-				
-				
+
+
 				do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
-				
+
+				unset($_SESSION['ag_errors']);
+
 				return $user;
-				
+
 			} else {
 
 				if($this->is_buddypress_registration()) {
-				
-						global $bp; 
-											
-						$bp->signup->errors['login_accept'] = $this->options['fail_text'];
-						
-						return;
-						
-					}
-					
-				
-				
+
+					global $bp;
+
+					$bp->signup->errors['ag_login_accept'] = $this->options['fail_text'];
+
+					return;
+
+				}
+
 				$errors = new WP_Error();
-				$errors->add('ag_did_not_accept', $this->options['fail_text']);
+				
+				$errors->add('ag_login_accept', $this->options['fail_text']);
+				
 
 				/* Incase it's a form that doesn't respect WordPress' error system */
 
 				$_SESSION['ag_errors'] = $this->options['fail_text'];
 
-
-				if(is_multisite()) {
+				if(is_multisite() && $this->is_multisite_register() && !$this->is_login_page()) {					
 					
 					$result = $user;
-					$result['errors'] = $errors;
 					
 					return $result;
 
-				} else {
-
-					return $errors;
-
 				}
+
+				return $errors;
 
 			}
 
@@ -186,50 +194,54 @@ class Agreeable {
 
 	}
 
+	function is_woocommerce_page () {
+
+		if(  function_exists( "is_woocommerce" ) && is_woocommerce()){
+			return true;
+		}
+
+		$woocommerce_keys   =   array ( "woocommerce_shop_page_id" ,
+			"woocommerce_terms_page_id" ,
+			"woocommerce_cart_page_id" ,
+			"woocommerce_checkout_page_id" ,
+			"woocommerce_pay_page_id" ,
+			"woocommerce_thanks_page_id" ,
+			"woocommerce_myaccount_page_id" ,
+			"woocommerce_edit_address_page_id" ,
+			"woocommerce_view_order_page_id" ,
+			"woocommerce_change_password_page_id" ,
+			"woocommerce_logout_page_id" ,
+			"woocommerce_lost_password_page_id" ) ;
+		foreach ( $woocommerce_keys as $wc_page_id ) {
+			if ( get_the_ID () == get_option ( $wc_page_id , 0 ) ) {
+				return true ;
+			}
+		}
+		return false;
+	}
+
 	function is_buddypress_registration() {
 
 		if(function_exists('bp_current_component')) {
-				
+
 			/* Lets make sure we're on the right page- Ie the buddypress register page */
 			$bp_pages = get_option('bp-pages');
 			$bp_page = get_post($bp_pages['register']);
-			
+
 			global $wp_query;
 			$current_page = isset($wp_query->query_vars['name']) ? $wp_query->query_vars['name'] : '';
-						
+
 			return $bp_page->post_name == $current_page ?  true : false;
 
 		}
-	}
-
-
-
-	function ag_woocommerce_reg_validation($reg_errors, $sanitized_user_login, $user_email) {
-		global $woocommerce;
-
-		if(!isset($_REQUEST['login_accept'])) {
-
-			if ( !isset($_COOKIE['agreeable_terms'] ) && $this->options['remember_me'] == 1 || $this->options['remember_me'] == 0) {
-				return new WP_Error('registration-error', __($this->options['fail_text'], 'woocommerce'));
-				$woocommerce->add_error( __( $this->options['fail_text'], 'woocommerce' ) );
-			} else {
-
-			}
-		}
-
-		if ( !isset( $_COOKIE['agreeable_terms'] ) && $this->options['remember_me'] == 1 ) {
-			setcookie( 'agreeable_terms', 'yes', strtotime('+30 days'), COOKIEPATH, COOKIE_DOMAIN, false );
-		}
-
-		return $reg_errors;
 	}
 
 	function ag_validate_comment($comment) {
 
 		if($this->options['comments'] == 1) {
 
-			// See if the checkbox #login_accept was checked
-			if ( isset( $_REQUEST['login_accept'] ) && $_REQUEST['login_accept'] == 'on' ) {
+			// See if the checkbox #ag_login_accept was checked
+			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 'on' ) {
 				// Checkbox on, allow comment
 				return $comment;
 			} else {
@@ -249,6 +261,8 @@ class Agreeable {
 
 
 	function ag_display_terms_form($type, $errors = '') {
+
+		global $bp;
 
 		if(isset($this->options['terms_page'])) {
 			$terms = get_post($this->options['terms_page']);
@@ -270,22 +284,18 @@ class Agreeable {
 
 		/*  Get our errors incase we need to display */
 
-		$errors = new WP_Error();
+		$errors = new WP_Error;
 
-		if(isset($_SESSION['ag_errors']) && $errors->get_error_message( 'ag_did_not_accept' ) == '' ) {
+		if(isset($_SESSION['ag_errors']) && $errors->get_error_message( 'ag_login_accept' ) == '') {
 
 			$error = $_SESSION['ag_errors'];
 			unset($_SESSION['ag_errors']);
 
-		} elseif (is_wp_error($errors)) {
-
-			unset($error);
-
 		}
+		
+		if ( isset($error) && !$this->is_login_page()) {
 
-		if ( !empty($error) ) {
-
-			echo "<br><p class='error'>$error</p>";
+			echo '<br><p class="error">'.$error.'</p>';
 
 		}
 
@@ -299,9 +309,9 @@ class Agreeable {
 
 		echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
 
-		if($this->is_buddypress_registration()){do_action( 'bp_login_accept_errors' );}
+		if($this->is_buddypress_registration()){do_action( 'bp_ag_login_accept_errors' );}
 
-		echo '<label style="text-align: left;"><input type="checkbox" name="login_accept" id="login_accept" '.$remember.' />&nbsp;<a title="'.get_post($this->options['terms_page'])->post_title.'" class="open-popup-link" target="_BLANK" href="'.$term_link.'">'.$this->options['message'].'</a></label>';
+		echo '<label style="text-align: left;"><input type="checkbox" value="1" name="ag_login_accept" id="ag_login_accept" '.$remember.' />&nbsp;<a title="'.get_post($this->options['terms_page'])->post_title.'" class="ag-open-popup-link" target="_BLANK" href="'.$term_link.'">'.$this->options['message'].'</a></label>';
 		echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
 		echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
 		echo $type == 'comments' ? '<br>':'';
@@ -326,18 +336,21 @@ class Agreeable {
 
 
 		if($this->options['register'] == 1) {
+
 			$this->ag_display_terms_form('register', $errors);
-			
-			echo '<script>';
-			echo '
-					jQuery(document).ready(function($){
-						if($("#theme-my-login")) {
-							$("#theme-my-login #terms-accept").insertBefore("#theme-my-login .submit");
-						}
-					});
-				';
-			echo '</script>';
-			
+
+			if(class_exists('ThemeMyLogin')) {
+				echo '<script>';
+				echo '
+						jQuery(document).ready(function($){
+							if($("#theme-my-login")) {
+								$("#theme-my-login #terms-accept").insertBefore("#theme-my-login .submit");
+							}
+						});
+					';
+				echo '</script>';
+			}
+
 		}
 		return;
 	}
@@ -359,14 +372,12 @@ class Agreeable {
 
 	}
 
-
-
 	function agreeable_options() {
 		add_options_page('agreeable', 'Agreeable', 'manage_options', 'terms-options', array($this, 'agoptions'));
 	}
 
 	function agoptions() {
-		include('agreeable-options.php');
+		include_once('includes/settings.php');
 	}
 
 	/* Plugin cross promotion area */
@@ -377,6 +388,10 @@ class Agreeable {
 
 	function is_login_page() {
 		return in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'));
+	}
+	
+	function is_multisite_register() {
+		return in_array($GLOBALS['pagenow'], array('wp-signup.php'));
 	}
 
 }

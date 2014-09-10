@@ -1,16 +1,14 @@
 === Agreeable ===
-Contributors: kraftpress, buildcreate, thesturs
-Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments, multisite
+Contributors: kraftpress, buildcreate
+Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments, multisite, woocommerce
 Requires at least: 3.5 
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: trunk
 License:GPLv2 or later
 Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress, bbPress and MultiSite.
 
 == Description ==
-Add an "agree to terms" check box to your login, registration, or comment forms, requiring users to agree. Tested with BuddyPress and Multisite.  Based on the I-Agree plugin by thesturs.
-
-Use the form in the plugin settings page to contact us with feature requests, comments, or concerns.
+Add an "agree to terms" check box to your login, registration, or comment forms, requiring users to agree. Tested with BuddyPress and Multisite.
 
 = Features =
 * Select your terms page from a dropdown
@@ -19,7 +17,8 @@ Use the form in the plugin settings page to contact us with feature requests, co
 * Customizable text and error message
 
 = Extensions =
-* Agreeable Records - Allows you to track user agreement by IP and username each time they log in. Learn more and purchase at: http://kraftpress.it/downloads/agreeable-records/
+* Agreeable Login Records - Allows you to track user agreement by IP and username each time they log in. Learn more and purchase at: http://kraftpress.it/downloads/agreeable-records/
+* WooCommerce Integration - Integrates Agreeable's terms & conditions fields into Woocommerce login, registration, and checkout. Learn more and purchase at: http://kraftpress.it/downloads/agreeable-woocommerce/
 
 = Translations =
 * Spanish (Andrew Kurtis, webhostinghub.com)
@@ -37,6 +36,14 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+= 1.3.5 =
+* Resolved multisite registration issue
+* Cleaned up code, renamed some functions
+* Added a couple more hooks
+* Added functions as needed for extensions
+* Updated settings page
+* Updated plugin banner
 
 = 1.3.3 =
 * Misc Multisite and BuddyPress bug fixes

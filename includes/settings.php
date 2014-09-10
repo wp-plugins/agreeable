@@ -1,18 +1,6 @@
 <?php 
 	    if(isset($_POST['ag_hidden']) && $_POST['ag_hidden'] == 'Y') {
-			//Form data sent
-			        
-          update_option('ag_fail', stripslashes($_POST['ag_fail']));          
-          update_option('ag_termm', $_POST['ag_termm']);  
-          update_option('ag_url', $_POST['ag_url']);
-          update_option('ag_colors', array('text-color' => $_POST['ag_text_color'], 'bg-color' => $_POST['ag_bg_color']));
-                      
-          isset($_POST['ag_login']) ? update_option('ag_login', $_POST['ag_login']) : update_option('ag_login', '');  
-          isset($_POST['ag_register']) ? update_option('ag_register', $_POST['ag_register']) : update_option('ag_register', '');
-          isset($_POST['ag_comments']) ? update_option('ag_comments', $_POST['ag_comments']) : update_option('ag_comments', '');        
-          isset($_POST['ag_lightbox']) ? update_option('ag_lightbox', $_POST['ag_lightbox']) : update_option('ag_lightbox', '');
-          isset($_POST['ag_remember']) ? update_option('ag_remember', $_POST['ag_remember']) : update_option('ag_remember', '');       
-          
+	    
           $this->update_options();
           
 ?> 
@@ -20,23 +8,15 @@
 			<div class="updated"><p><strong><?php _e('Options saved.' ); ?></strong></p></div>  
 			
 			<?php
-		} else {
-		  
-/*
-		  if(empty($this->options['colors'])) {
-			  $this->options['colors']['text-color'] = '#333333';
-			  $this->options['colors']['bg-color'] = '#FFFFFF';
-		  }
-*/
- 		  		  
 		}
+		
 	?>
 
 <?php $pages = get_pages('status=publish&numberposts=-1&posts_per_page=-1'); ?>
 
 <div class="wrap agreeable-settings">
 			<div class="ag-plugin-banner">
-				<img src="<?php echo plugins_url('/images/banner.png', __FILE__); ?>" alt="Agreeable" />
+				<img src="<?php echo plugins_url('../images/banner.png', __FILE__); ?>" alt="Agreeable" />
 			</div>
 			<div class="kp-cross-promote-area">
 				<?php $this->cross_promotions('agreeable'); ?>
@@ -46,7 +26,7 @@
 			<form id="ag-form" name="ag_form" method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
 				<input type="hidden" name="ag_hidden" value="Y">
 				
-				<?php    echo "<h3>" . __( 'Settings', 'agreeable' ) . "</h3>"; ?>
+				<?php    echo "<h3>" . __( 'General Settings', 'agreeable' ) . "</h3>"; ?>
 				
 				<p><label for="ag_fail"><?php _e("Failed to agree error message: ", 'agreeable' ); ?></label><input type="text" name="ag_fail" value="<?php echo esc_attr($this->options['fail_text']); ?>" size="20"></br><span class='mes'><?php _e("This is what shows up if they don't check the box", 'agreeable' ); ?></span></p>
 				
@@ -69,7 +49,7 @@
 				</p>
 				
 				<div class="ag-color-options ag-checkboxes">
-					<h3><?php _e("Lightbox Options", 'agreeable'); ?></h3>
+					<h4><?php _e("Lightbox Options", 'agreeable'); ?></h4>
 					<p class="ag-checkboxes">
 						<input type="checkbox" id="ag_lightbox" name="ag_lightbox" value="1" <?php if($this->options['lightbox'] == 1) {echo 'checked';} ?> />
 						<label for="ag_lightbox"><?php _e("Active?", 'agreeable'); ?></label>
@@ -87,7 +67,7 @@
 
 				<div class="ag-checkboxes">
 								
-				<h3><?php _e("Where should it be displayed? ", 'agreeable' ); ?></h3>
+				<h4><?php _e("Where should it be displayed? ", 'agreeable' ); ?></h4>
 					<p>
 						<input type="checkbox" id="ag_login" name="ag_login" value="1" <?php if($this->options['login'] == 1) {echo 'checked';} ?> /> <label for="ag_login"> <?php _e("Login form", 'agreeable'); ?></label><br>
 						<input type="checkbox" id="ag_register" name="ag_register" value="1" <?php if($this->options['register'] == 1) {echo 'checked';} ?> /> <label for="ag_register"><?php _e("Registration form", 'agreeable'); ?></label>

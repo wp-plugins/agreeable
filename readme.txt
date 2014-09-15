@@ -1,6 +1,6 @@
 === Agreeable ===
 Contributors: kraftpress, buildcreate
-Tags: agree, terms, conditions, require, terms, login, log in, admin, login page, admin, buddy press, page, policy, privacy, bbpress, theme my login, signup, register, widgets, comment terms, comments, multisite, woocommerce
+Tags: agree,terms,conditions,require,terms,login,log in,admin,login page,admin,buddypress,page,policy,privacy,bbpress,theme my login,signup,register,widgets,comment terms,comments,multisite,woocommerce
 Requires at least: 3.5 
 Tested up to: 4.0
 Stable tag: trunk

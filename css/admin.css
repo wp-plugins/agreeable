@@ -9,7 +9,7 @@
 #ag-form {
 	width: 50%;
 }
-textarea {
+#ag-form textarea {
 	clear: right;
 	float: right;
 }

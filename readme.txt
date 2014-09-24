@@ -37,6 +37,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+= 1.3.7 =
+* Fixed bug on editor page
+
 = 1.3.6 =
 * Fixed bug with user registration validation
 

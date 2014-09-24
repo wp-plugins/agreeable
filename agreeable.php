@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.5
+Version: 1.3.6
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -34,7 +34,7 @@ class Agreeable {
 		add_action('admin_menu', array($this, 'agreeable_options'));
 
 		/* Registration Validation Hooks  */
-		add_filter('registration_errors', array($this, 'ag_authenticate_user_acc'), 10, 2);
+		add_filter('registration_errors', array($this, 'registration_validation'), 0, 2);
 		add_filter('bp_signup_validate', array($this, 'ag_authenticate_user_acc'), 10, 2);
 		add_filter('wpmu_validate_user_signup', array($this, 'ag_authenticate_user_acc'), 10, 3);
 
@@ -114,7 +114,7 @@ class Agreeable {
 	function ag_admin() {
 
 		/* Plugin Stylesheet */
-		wp_enqueue_style( 'agreeable-css', plugins_url('css/admin.css', __FILE__), '', '0.3.4', 'screen');
+		wp_enqueue_style( 'agreeable-css', plugins_url('css/admin.css', __FILE__), '', '1.3.5', 'screen');
 
 	}
 
@@ -130,6 +130,31 @@ class Agreeable {
 		wp_enqueue_style( 'magnific', plugins_url('css/magnific.css', __FILE__));
 		wp_enqueue_style( 'agreeable-css', plugins_url('css/front.css', __FILE__));
 
+	}
+	
+	function registration_validation() {
+		
+		$errors = new WP_error();
+		
+		if(isset($_REQUEST['ag_type']) && $_REQUEST['ag_type'] == 'register' && $this->options['register'] == 1) {
+			
+			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 1) {
+			
+				return $errors;
+			
+			} else {
+			
+				$errors->add('ag_login_accept', $this->options['fail_text']);
+				
+				return $errors;
+			}
+			
+		} else {
+		
+			return $errors;
+			
+		}
+		
 	}
 
 	function ag_authenticate_user_acc($user) {
@@ -150,8 +175,9 @@ class Agreeable {
 				do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
 
 				unset($_SESSION['ag_errors']);
-
+							
 				return $user;
+		
 
 			} else {
 
@@ -178,6 +204,8 @@ class Agreeable {
 					
 					$result = $user;
 					
+					$result['errors'] = $errors;
+					
 					return $result;
 
 				}
@@ -187,7 +215,7 @@ class Agreeable {
 			}
 
 		} else {
-
+				
 			return $user;
 
 		}
@@ -243,6 +271,7 @@ class Agreeable {
 			// See if the checkbox #ag_login_accept was checked
 			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 'on' ) {
 				// Checkbox on, allow comment
+				do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
 				return $comment;
 			} else {
 				// Did NOT check the box, do not allow login
@@ -315,6 +344,7 @@ class Agreeable {
 		echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
 		echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
 		echo $type == 'comments' ? '<br>':'';
+				
 	}
 
 

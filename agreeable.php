@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.7
+Version: 1.3.8
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -335,15 +335,19 @@ class Agreeable {
 		if ( isset($_COOKIE['agreeable_terms'] ) && $this->options['remember_me'] == 1 ) {
 			$remember = ' checked ';
 		}
+		
+		if(!$this->is_woocommerce_page()) {
 
-		echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
-
-		if($this->is_buddypress_registration()){do_action( 'bp_ag_login_accept_errors' );}
-
-		echo '<label style="text-align: left;"><input type="checkbox" value="1" name="ag_login_accept" id="ag_login_accept" '.$remember.' />&nbsp;<a title="'.get_post($this->options['terms_page'])->post_title.'" class="ag-open-popup-link" target="_BLANK" href="'.$term_link.'">'.$this->options['message'].'</a></label>';
-		echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
-		echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
-		echo $type == 'comments' ? '<br>':'';
+			echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
+	
+			if($this->is_buddypress_registration()){do_action( 'bp_ag_login_accept_errors' );}
+	
+			echo '<label style="text-align: left;"><input type="checkbox" value="1" name="ag_login_accept" id="ag_login_accept" '.$remember.' />&nbsp;<a title="'.get_post($this->options['terms_page'])->post_title.'" class="ag-open-popup-link" target="_BLANK" href="'.$term_link.'">'.$this->options['message'].'</a></label>';
+			echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
+			echo '<div id="terms" class="mfp-hide">'.$terms_content.'</div>';
+			echo $type == 'comments' ? '<br>':'';
+			
+		}
 				
 	}
 

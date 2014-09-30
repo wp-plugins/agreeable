@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.8
+Version: 1.3.9
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -224,9 +224,11 @@ class Agreeable {
 
 	function is_woocommerce_page () {
 
+/*
 		if(  function_exists( "is_woocommerce" ) && is_woocommerce()){
 			return true;
 		}
+*/
 
 		$woocommerce_keys   =   array ( "woocommerce_shop_page_id" ,
 			"woocommerce_terms_page_id" ,
@@ -336,7 +338,7 @@ class Agreeable {
 			$remember = ' checked ';
 		}
 		
-		if(!$this->is_woocommerce_page()) {
+		if(!$this->is_woocommerce_page() || $this->is_login_page()) {
 
 			echo '<div style="clear: both; padding: .25em 0;" id="terms-accept" class="terms-form">';
 	

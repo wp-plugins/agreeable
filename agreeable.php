@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.9.1
+Version: 1.3.9.2
 Author: kraftpress
 Author URI: http://kraftpress.it
 */

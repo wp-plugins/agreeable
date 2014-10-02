@@ -37,6 +37,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+== 1.3.9.3 ==
+* Fixed lightbox issues and registration page
+
 == 1.3.8 == 
 * Fixed bug with WooCommerce extension
 

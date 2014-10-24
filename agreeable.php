@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.9.4
+Version: 1.3.9.5
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -261,12 +261,12 @@ class Agreeable {
 		if($this->options['comments'] == 1) {
 
 			// See if the checkbox #ag_login_accept was checked
-			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 'on' ) {
+			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 1 ) {
 				// Checkbox on, allow comment
-				do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
+				//do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
 				return $comment;
 			} else {
-				// Did NOT check the box, do not allow login
+				// Did NOT check the box, do not allow comment
 
 				$error = new WP_Error();
 				$error->add('did_not_accept', $this->options['fail_text']);

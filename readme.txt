@@ -37,6 +37,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+== 1.3.9.5 ==
+* Fixed issue preventing comments from being posted
+
 == 1.3.9.4 ==
 * Fixed issue with WooCommerce options table entries
 

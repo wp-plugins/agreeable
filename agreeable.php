@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.9.5
+Version: 1.3.9.6
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -299,10 +299,10 @@ class Agreeable {
 			
 			$class = 'ag-open-popup-link';
 			
-			$term_link = '#terms';
+			$term_link = '#ag-terms';
 
 			if($this->options['colors']) {
-				echo '<style>#terms {background: '.$this->options['colors']['bg-color'].' !important; color: '.$this->options['colors']['text-color'].';}</style>';
+				echo '<style>#ag-terms {background: '.$this->options['colors']['bg-color'].' !important; color: '.$this->options['colors']['text-color'].';}</style>';
 			}
 		}
 
@@ -339,7 +339,7 @@ class Agreeable {
 	
 			echo '<label style="text-align: left;"><input type="checkbox" value="1" name="ag_login_accept" id="ag_login_accept" '.$remember.' />&nbsp;<a title="'.get_post($this->options['terms_page'])->post_title.'" class="'.$class.'" target="_BLANK" href="'.$term_link.'">'.$this->options['message'].'</a></label>';
 			echo '<input type="hidden" value="'.$type.'" name="ag_type" /></div>';
-			echo $term_link == '#terms' ? '<div id="terms" class="mfp-hide">'.$terms_content.'</div>' : '';
+			echo $term_link == '#ag-terms' ? '<div id="ag-terms" class="mfp-hide">'.$terms_content.'</div>' : '';
 			echo $type == 'comments' ? '<br>':'';
 			
 		}

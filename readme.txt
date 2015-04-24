@@ -2,7 +2,7 @@
 Contributors: kraftpress, buildcreate
 Tags: agree,terms,conditions,require,terms,login,log in,admin,login page,admin,buddypress,page,policy,privacy,bbpress,theme my login,signup,register,widgets,comment terms,comments,multisite,woocommerce
 Requires at least: 3.5 
-Tested up to: 4.0
+Tested up to: 4.2
 Stable tag: trunk
 License:GPLv2 or later
 Add an "Agree to terms" check box on login, registration, or comment forms.  Works with BuddyPress, bbPress and MultiSite.
@@ -36,6 +36,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 
 == Changelog ==
+
+== 1.3.9.6 ==
+* Changed hidden terms div id to prevent conflicts
 
 == 1.3.9.5 ==
 * Fixed issue preventing comments from being posted

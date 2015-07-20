@@ -37,6 +37,9 @@ Extract the zip file and just drop the contents in the wp-content/plugins/ direc
 
 == Changelog ==
 
+= 1.4 =
+* Updated comment tracking, misc bug fixes
+
 == 1.3.9.6 ==
 * Changed hidden terms div id to prevent conflicts
 

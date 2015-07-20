@@ -3,7 +3,7 @@
 Plugin Name: Agreeable
 Plugin URI: http://wordpress.org/extend/plugins/agreeable
 Description: Add a required "Agree to terms" checkbox to login and/or register forms.
-Version: 1.3.9.6
+Version: 1.4
 Author: kraftpress
 Author URI: http://kraftpress.it
 */
@@ -48,6 +48,7 @@ class Agreeable {
 		add_filter('login_form', array($this, 'ag_login_terms_accept') );
 		add_filter('register_form', array($this, 'ag_register_terms_accept'));
 		add_filter('comment_form_after_fields', array($this, 'ag_comment_terms_accept'));
+		add_filter('comment_form_logged_in_after', array($this, 'ag_comment_terms_accept'));
 		add_action('bp_before_registration_submit_buttons', array($this, 'ag_register_terms_accept'));
 		add_action('tml_register_form', array($this, 'ag_register_terms_accept'), 10, 3);
 		add_action('bp_after_login_widget_loggedout', array($this, 'ag_widget_terms_accept'));
@@ -178,7 +179,6 @@ class Agreeable {
 							
 				return $user;
 		
-
 			} else {
 
 				if($this->is_buddypress_registration()) {
@@ -262,9 +262,21 @@ class Agreeable {
 
 			// See if the checkbox #ag_login_accept was checked
 			if ( isset( $_REQUEST['ag_login_accept'] ) && $_REQUEST['ag_login_accept'] == 1 ) {
+				
 				// Checkbox on, allow comment
-				//do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
+				// Grab info from the form
+				
+				global $current_user;
+				
+				if(is_user_logged_in()) {
+					$user = $current_user->ID;
+				} else {
+					$user = array('author' => $_REQUEST['author'], 'email' => $_REQUEST['email']);
+				}
+				
+				do_action('agreeable_validate_user', $user, $_REQUEST['ag_type']);
 				return $comment;
+				
 			} else {
 				// Did NOT check the box, do not allow comment
 
